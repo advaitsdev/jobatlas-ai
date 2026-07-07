@@ -1,0 +1,13 @@
+node_modules/
+dist/
+dist-ssr/
+
+.env
+.env.local
+
+coverage/
+
+.vscode/*
+!.vscode/settings.json
+
+*.local
