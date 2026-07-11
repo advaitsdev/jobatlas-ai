@@ -1,3 +1,10 @@
+from sqlalchemy import Boolean, String
+from sqlalchemy.orm import Mapped, mapped_column
+
+from app.models.base import BaseModel
+from app.models.mixins import UUIDMixin, TimestampMixin
+
+
 class User(UUIDMixin, TimestampMixin, BaseModel):
     __tablename__ = "users"
 
@@ -10,5 +17,6 @@ class User(UUIDMixin, TimestampMixin, BaseModel):
     )
 
     is_active: Mapped[bool] = mapped_column(
-        default=True
+        Boolean,
+        default=True,
     )
