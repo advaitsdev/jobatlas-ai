@@ -4,11 +4,9 @@ from fastapi import HTTPException
 from fastapi import APIRouter, Depends
 
 from app.db.session import get_db
-from app.schemas.opportunity import (
-    OpportunityCreate,
-    OpportunityResponse,
-)
+from app.schemas.opportunity import (OpportunityCreate,OpportunityResponse,)
 from app.services.opportunity_service import OpportunityService
+from app.schemas.opportunity import (OpportunityCreate,OpportunityResponse,OpportunityUpdate,)
 
 router = APIRouter(
     prefix="/opportunities",
@@ -58,3 +56,27 @@ def delete_opportunity(
     return {
         "message": "Opportunity deleted successfully"
     }
+
+@router.patch(
+    "/{opportunity_id}",
+    response_model=OpportunityResponse,
+)
+def update_opportunity(
+    opportunity_id: str,
+    opportunity: OpportunityUpdate,
+    db: Session = Depends(get_db),
+):
+    service = OpportunityService(db)
+
+    updated = service.update_opportunity(
+        opportunity_id,
+        opportunity,
+    )
+
+    if updated is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Opportunity not found",
+        )
+
+    return updated

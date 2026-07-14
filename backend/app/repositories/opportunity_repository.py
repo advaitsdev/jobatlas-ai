@@ -38,3 +38,25 @@ class OpportunityRepository:
 
         return opportunity
     
+    def update(self,opportunity_id,opportunity_data,):
+        opportunity = (
+        self.db.query(Opportunity)
+        .filter(Opportunity.id == opportunity_id)
+        .first()
+    )
+
+        if not opportunity:
+            return None
+
+        update_data = opportunity_data.model_dump(
+            exclude_unset=True
+        )
+
+        for key, value in update_data.items():
+            setattr(opportunity, key, value)
+
+        self.db.commit()
+        self.db.refresh(opportunity)
+
+        return opportunity
+    
