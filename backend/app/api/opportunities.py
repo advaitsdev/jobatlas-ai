@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from fastapi import HTTPException
 
 from fastapi import APIRouter, Depends
 
@@ -38,3 +39,22 @@ def get_opportunities(
 ):
     service = OpportunityService(db)
     return service.get_opportunities()
+
+@router.delete("/{opportunity_id}")
+def delete_opportunity(
+    opportunity_id: str,
+    db: Session = Depends(get_db),
+):
+    service = OpportunityService(db)
+
+    deleted = service.delete_opportunity(opportunity_id)
+
+    if deleted is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Opportunity not found",
+        )
+
+    return {
+        "message": "Opportunity deleted successfully"
+    }

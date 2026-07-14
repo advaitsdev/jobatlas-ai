@@ -13,3 +13,6 @@ class OpportunityService:
     
     def get_opportunities(self):
         return self.repository.get_all()
+    
+    def delete_opportunity(self, opportunity_id: str):
+        return self.repository.delete(opportunity_id)

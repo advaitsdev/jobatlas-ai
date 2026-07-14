@@ -28,12 +28,13 @@ export default function OpportunityList() {
     <div className="mt-8 space-y-4">
       {opportunities.map((opportunity) => (
         <OpportunityCard
-          key={opportunity.id}
-          title={opportunity.title}
-          status={opportunity.status}
-          location={opportunity.location}
-          companyId={opportunity.company_id}
-        />
+        key={opportunity.id}
+        id={opportunity.id}
+        title={opportunity.title}
+        status={opportunity.status}
+        location={opportunity.location}
+        companyId={opportunity.company_id}
+/>
       ))}
     </div>
   );
