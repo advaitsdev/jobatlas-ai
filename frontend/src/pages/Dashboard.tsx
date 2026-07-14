@@ -1,3 +1,5 @@
+import OpportunityList from "@/components/dashboard/OpportunityList";
+
 export default function Dashboard() {
   return (
     <div>
@@ -8,6 +10,8 @@ export default function Dashboard() {
       <p className="mt-2 text-slate-400">
         Welcome back, Advait 👋
       </p>
+
+      <OpportunityList />
     </div>
   );
 }
