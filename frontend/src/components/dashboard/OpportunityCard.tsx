@@ -5,6 +5,7 @@ type OpportunityCardProps = {
   status: string;
   location: string;
   companyId: string;
+  onDelete: (id: string) => void;
 };
 
 export default function OpportunityCard({
@@ -13,6 +14,7 @@ export default function OpportunityCard({
   status,
   location,
   companyId,
+  onDelete
 }: OpportunityCardProps)  {
   const handleDelete = async () => {
   const confirmed = window.confirm(
@@ -23,12 +25,7 @@ export default function OpportunityCard({
 
   try {
     await deleteOpportunity(id);
-
-    alert("Opportunity deleted!");
-
-    // We'll improve this in the next step
-    // by removing the card without refreshing.
-    window.location.reload();
+    onDelete(id);
   } catch (error) {
     console.error(error);
     alert("Failed to delete opportunity.");
