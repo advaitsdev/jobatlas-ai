@@ -1,12 +1,15 @@
+from typing import TYPE_CHECKING
 from uuid import UUID
 from datetime import date
 
 from sqlalchemy import Date, Enum, ForeignKey, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
 from app.models.enums import OpportunityStatus
 from app.models.mixins import TimestampMixin, UUIDMixin
+if TYPE_CHECKING:
+    from app.models.company import Company
 
 
 class Opportunity(UUIDMixin, TimestampMixin, BaseModel):
@@ -20,6 +23,9 @@ class Opportunity(UUIDMixin, TimestampMixin, BaseModel):
     company_id: Mapped[UUID] = mapped_column(
     ForeignKey("companies.id"),
     nullable=False,
+)
+    company: Mapped["Company"] = relationship(
+    back_populates="opportunities",
 )
 
     user_id: Mapped[UUID] = mapped_column(

@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.opportunities import router as opportunity_router
+from app.api.companies import router as companies_router
+from app.api.users import router as users_router
 
 app = FastAPI(
     title="JobAtlas AI API",
@@ -19,7 +21,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+app.include_router(users_router)
+app.include_router(companies_router)
 app.include_router(opportunity_router)
 
 @app.get("/")
@@ -28,3 +31,5 @@ def root():
         "message": "Welcome to JobAtlas AI 🚀",
         "status": "running",
     }
+
+app.include_router(companies_router)

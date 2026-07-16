@@ -4,7 +4,10 @@ type OpportunityCardProps = {
   title: string;
   status: string;
   location: string;
-  companyId: string;
+  company: {
+    id: string;
+    name: string;
+  };
   onDelete: (id: string) => void;
 };
 
@@ -13,9 +16,9 @@ export default function OpportunityCard({
   title,
   status,
   location,
-  companyId,
-  onDelete
-}: OpportunityCardProps)  {
+  company,
+  onDelete,
+}: OpportunityCardProps) {
   const handleDelete = async () => {
   const confirmed = window.confirm(
     "Are you sure you want to delete this opportunity?"
@@ -37,9 +40,13 @@ export default function OpportunityCard({
   {title}
 </h2>
 
-      <p className="mt-2 text-slate-400">
-        Company ID: {companyId}
-      </p>
+     <p className="mt-2 text-sm text-slate-300">
+        Company
+    </p>
+
+    <p className="font-semibold text-white">
+    {company.name}
+    </p>
 
       <p className="text-slate-400">
         📍 {location}

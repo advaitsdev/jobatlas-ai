@@ -54,14 +54,13 @@ export default function OpportunityList() {
     <div className="mt-8 space-y-4">
       {opportunities.map((opportunity) => (
         <OpportunityCard
-          key={opportunity.id}
-          id={opportunity.id}
-          title={opportunity.title}
-          status={opportunity.status}
-          location={opportunity.location}
-          companyId={opportunity.company_id}
-          onDelete={handleDeleteSuccess}
-        />
+        key={opportunity.id}
+        id={opportunity.id}
+        title={opportunity.title}
+        status={opportunity.status}
+        location={opportunity.location}
+        company={opportunity.company}
+/>
       ))}
     </div>
   );

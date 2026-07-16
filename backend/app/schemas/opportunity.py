@@ -31,12 +31,17 @@ class OpportunityUpdate(BaseModel):
     deadline: date | None = None
     notes: str | None = None
 
+class CompanySummary(BaseModel):
+    id: UUID
+    name: str
 
+    model_config = ConfigDict(from_attributes=True)
+    
 class OpportunityResponse(BaseModel):
     id: UUID
 
     title: str
-    company_id: UUID
+    company: CompanySummary
     user_id: UUID
 
     location: str | None

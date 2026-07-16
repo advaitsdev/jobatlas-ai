@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models.opportunity import Opportunity
 from app.schemas.opportunity import OpportunityCreate
@@ -21,7 +21,11 @@ class OpportunityRepository:
         return opportunity
     
     def get_all(self) -> list[Opportunity]:
-        return self.db.query(Opportunity).all()
+        return (
+            self.db.query(Opportunity)
+            .options(joinedload(Opportunity.company))
+            .all()
+        )
     
     def delete(self, opportunity_id: str):
         opportunity = (

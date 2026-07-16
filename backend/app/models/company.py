@@ -1,9 +1,11 @@
+from typing import TYPE_CHECKING
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
 from app.models.mixins import UUIDMixin, TimestampMixin
-
+if TYPE_CHECKING:
+    from app.models.opportunity import Opportunity
 
 class Company(UUIDMixin, TimestampMixin, BaseModel):
     __tablename__ = "companies"
@@ -23,3 +25,7 @@ class Company(UUIDMixin, TimestampMixin, BaseModel):
         String(100),
         nullable=True,
     )
+    opportunities: Mapped[list["Opportunity"]] = relationship(
+    back_populates="company",
+)
+    
