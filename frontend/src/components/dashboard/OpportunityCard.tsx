@@ -8,7 +8,11 @@ type OpportunityCardProps = {
     id: string;
     name: string;
   };
+  salary?: string;
+  employmentType?: string;
+  deadline?: string;
   onDelete: (id: string) => void;
+  onEdit: (id: string) => void;
 };
 
 export default function OpportunityCard({
@@ -17,8 +21,42 @@ export default function OpportunityCard({
   status,
   location,
   company,
+  salary,
+  employmentType,
+  deadline,
   onDelete,
+  onEdit
 }: OpportunityCardProps) {
+  const getStatusClass = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "wishlist":
+      return "bg-blue-600";
+
+    case "applied":
+      return "bg-yellow-500";
+
+    case "interview":
+      return "bg-purple-600";
+
+    case "offer":
+      return "bg-green-600";
+
+    case "rejected":
+      return "bg-red-600";
+
+    default:
+      return "bg-slate-600";
+  }
+};
+  const formatDate = (date?: string) => {
+  if (!date) return "";
+
+  return new Date(date).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
   const handleDelete = async () => {
   const confirmed = window.confirm(
     "Are you sure you want to delete this opportunity?"
@@ -44,18 +82,44 @@ export default function OpportunityCard({
         Company
     </p>
 
-    <p className="font-semibold text-white">
-    {company.name}
+    <p className="mt-2 text-slate-300">
+  🏢 <span className="font-semibold text-white">{company.name}</span>
     </p>
 
       <p className="text-slate-400">
         📍 {location}
       </p>
+      {salary && (
+      <p className="text-slate-400">
+        💰 {salary}
+      </p>
+    )}
 
-      <span className="mt-3 inline-block rounded bg-blue-600 px-3 py-1 text-sm text-white">
+    {employmentType && (
+      <p className="text-slate-400">
+        🕒 {employmentType}
+      </p>
+    )}
+
+    {deadline && (
+      <p className="text-slate-400">
+        📅 {formatDate(deadline)}
+      </p>
+    )}
+
+
+      <span
+        className={`mt-3 inline-block rounded px-3 py-1 text-sm font-medium text-white ${getStatusClass(status)}`}
+>
         {status}
-      </span>
-      <div className="mt-4">
+    </span>
+      <div className="mt-4 flex justify-end gap-3">
+        <button
+            onClick={() => onEdit(id)}
+    className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+  >
+    ✏ Edit
+  </button>
   <button
     onClick={handleDelete}
     className="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700 transition-colors"
@@ -65,4 +129,6 @@ export default function OpportunityCard({
 </div>
     </div>
   );
+
+  
 }

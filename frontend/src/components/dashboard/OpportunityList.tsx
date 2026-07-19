@@ -1,31 +1,24 @@
-import { useEffect, useState } from "react";
-
 import OpportunityCard from "./OpportunityCard";
 
-import { getOpportunities } from "@/services/opportunity";
 import type { Opportunity } from "@/types/opportunity";
 
-export default function OpportunityList() {
-  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+type OpportunityListProps = {
+  opportunities: Opportunity[];
+  setOpportunities: React.Dispatch<
+    React.SetStateAction<Opportunity[]>
+  >;
+  loading: boolean;
+  error: string;
+  onEdit: (id: string) => void;
+};
 
-  useEffect(() => {
-    const fetchOpportunities = async () => {
-      try {
-        const data = await getOpportunities();
-        setOpportunities(data);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load opportunities.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOpportunities();
-  }, []);
-
+export default function OpportunityList({
+  opportunities,
+  setOpportunities,
+  loading,
+  error,
+  onEdit,
+}: OpportunityListProps) {
   const handleDeleteSuccess = (id: string) => {
     setOpportunities((previous) =>
       previous.filter(
@@ -54,13 +47,19 @@ export default function OpportunityList() {
     <div className="mt-8 space-y-4">
       {opportunities.map((opportunity) => (
         <OpportunityCard
-        key={opportunity.id}
-        id={opportunity.id}
-        title={opportunity.title}
-        status={opportunity.status}
-        location={opportunity.location}
-        company={opportunity.company}
-/>
+          key={opportunity.id}
+          id={opportunity.id}
+          title={opportunity.title}
+          company={opportunity.company}
+          location={opportunity.location}
+          status={opportunity.status}
+          salary={opportunity.salary}
+          employmentType={opportunity.employment_type}
+          deadline={opportunity.deadline}
+          onDelete={handleDeleteSuccess}
+          onEdit = {onEdit}
+          
+        />
       ))}
     </div>
   );

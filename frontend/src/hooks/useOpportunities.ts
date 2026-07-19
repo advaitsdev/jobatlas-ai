@@ -25,8 +25,9 @@ export function useOpportunities() {
   }, []);
 
   return {
-    opportunities,
-    loading,
-    error,
-  };
+  opportunities,
+  setOpportunities,
+  loading,
+  error,
+};
 }
