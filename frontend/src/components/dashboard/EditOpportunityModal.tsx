@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { updateOpportunity } from "@/services/opportunity";
 import type { Opportunity } from "@/types/opportunity";
 import OpportunityForm from "./OpportunityForm";
@@ -33,9 +34,12 @@ export default function EditOpportunityModal({
           onSubmit={async (data) => {
   try {
     const updatedOpportunity = await updateOpportunity(opportunity.id, data);
-    onUpdated(updatedOpportunity);
 
-    onClose();
+onUpdated(updatedOpportunity);
+
+toast.success("Opportunity updated successfully!");
+
+onClose();
   } catch (error) {
     console.error(error);
     alert("Failed to update opportunity.");

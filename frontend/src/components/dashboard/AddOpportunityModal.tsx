@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { createOpportunity } from "@/services/opportunity";
 import OpportunityForm from "./OpportunityForm";
 
@@ -27,15 +28,17 @@ export default function AddOpportunityModal({
   try {
     const createdOpportunity = await createOpportunity({
   ...data,
-  user_id: "YOUR-USER-ID",
+  user_id: "f08be4be-6841-4740-bece-5cacd1839b37",
 });
 
 onCreated(createdOpportunity);
 
+toast.success("Opportunity created successfully!");
+
 onClose();
   } catch (error) {
     console.error(error);
-    alert("Failed to create opportunity.");
+    toast.error("Failed to create opportunity.");
   }
 };
   

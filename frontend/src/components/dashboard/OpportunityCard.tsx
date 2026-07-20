@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { deleteOpportunity } from "@/services/opportunity";
 type OpportunityCardProps = {
   id: string;
@@ -66,11 +67,19 @@ export default function OpportunityCard({
 
   try {
     await deleteOpportunity(id);
-    onDelete(id);
+
+onDelete(id);
+
+toast.success("Opportunity deleted successfully!");
   } catch (error) {
+  if (error instanceof Error) {
+    console.error(error.message);
+  } else {
     console.error(error);
-    alert("Failed to delete opportunity.");
   }
+
+  toast.error("Failed to create opportunity.");
+}
 };
   return (
     <div className="rounded-xl border border-slate-700 bg-slate-800 p-5">

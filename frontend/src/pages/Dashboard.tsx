@@ -1,3 +1,6 @@
+import SortDropdown from "@/components/dashboard/SortDropdown";
+import StatusFilter from "@/components/dashboard/StatusFilter";
+import SearchBar from "@/components/dashboard/Searchbar";
 import EditOpportunityModal from "@/components/dashboard/EditOpportunityModal";
 import type { Opportunity } from "@/types/opportunity";
 import { useState } from "react";
@@ -18,9 +21,27 @@ export default function Dashboard() {
   const [showAddOpportunityModal, setShowAddOpportunityModal] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] =
   useState<Opportunity | null>(null);
-
   const [showEditOpportunityModal, setShowEditOpportunityModal] =
   useState(false);
+const [searchQuery, setSearchQuery] = useState("");
+const [statusFilter, setStatusFilter] = useState("All");
+const [sortBy, setSortBy] = useState("Newest");
+
+  const filteredOpportunities = opportunities.filter((opportunity) => {
+  const query = searchQuery.toLowerCase();
+
+  const matchesSearch =
+    opportunity.title.toLowerCase().includes(query) ||
+    opportunity.company.name.toLowerCase().includes(query) ||
+    opportunity.location.toLowerCase().includes(query);
+
+  const matchesStatus =
+    statusFilter === "All" ||
+    opportunity.status === statusFilter;
+
+  return matchesSearch && matchesStatus;
+});
+
 
    
   return (
@@ -45,9 +66,23 @@ export default function Dashboard() {
     </div>
 
     <DashboardStats opportunities={opportunities} />
+    
+
+<SearchBar
+  value={searchQuery}
+  onChange={setSearchQuery}
+/>
+<StatusFilter
+  value={statusFilter}
+  onChange={setStatusFilter}
+/>
+<SortDropdown
+  value={sortBy}
+  onChange={setSortBy}
+/>
 
     <OpportunityList
-  opportunities={opportunities}
+  opportunities={filteredOpportunities}
   setOpportunities={setOpportunities}
   loading={loading}
   error={error}
