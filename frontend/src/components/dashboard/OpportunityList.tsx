@@ -42,6 +42,21 @@ export default function OpportunityList({
       </p>
     );
   }
+  if (opportunities.length === 0) {
+  return (
+    <div className="mt-12 rounded-xl border border-dashed border-slate-700 bg-slate-900 p-12 text-center">
+      <div className="text-5xl">🔍</div>
+
+      <h2 className="mt-4 text-2xl font-semibold text-white">
+        No opportunities found
+      </h2>
+
+      <p className="mt-2 text-slate-400">
+        Try changing your search or filters.
+      </p>
+    </div>
+  );
+}
 
   return (
     <div className="mt-8 space-y-4">
