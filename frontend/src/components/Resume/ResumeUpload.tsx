@@ -1,4 +1,6 @@
 
+import ResumeAnalysis from "./ResumeAnalysis";
+import type { ResumeAnalysis as ResumeAnalysisType } from "@/types/resume";
 import { uploadResume } from "@/services/resume";
 import { toast } from "sonner";
 import { useCallback, useState } from "react";
@@ -10,6 +12,9 @@ export default function ResumeUpload() {
     useState<File | null>(null);
     const [uploading, setUploading] =
   useState(false);
+  const [analysis, setAnalysis] =
+    useState<ResumeAnalysisType | null>(null);
+
 
   const onDrop = useCallback(
   async (acceptedFiles: File[]) => {
@@ -22,11 +27,24 @@ export default function ResumeUpload() {
     try {
       setUploading(true);
 
-      await uploadResume(file);
+      const response = await uploadResume(file);
 
-      toast.success(
-        "Resume uploaded successfully!"
-      );
+setAnalysis(response.analysis);
+
+toast.success(
+  "Resume analyzed successfully!"
+);
+{uploading && (
+  <div className="rounded-xl bg-slate-900 p-6 text-center">
+    <p className="text-lg font-medium text-blue-400">
+      🤖 AI is analyzing your resume...
+    </p>
+
+    <p className="mt-2 text-slate-400">
+      This usually takes a few seconds.
+    </p>
+  </div>
+)}
     } catch (error) {
       console.error(error);
 
@@ -112,7 +130,11 @@ export default function ResumeUpload() {
 
         </div>
       )}
-
+    {analysis && (
+  <ResumeAnalysis
+    analysis={analysis}
+  />
+)}
     </div>
   );
 }

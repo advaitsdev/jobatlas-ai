@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-
+import ResumeMatcherPage from "@/pages/ResumeMatcher";
 import AppLayout from "@/layouts/AppLayout";
 
 import Dashboard from "@/pages/Dashboard";
@@ -37,6 +37,10 @@ export default function AppRouter() {
           path="/resume"
           element={<Resume />}
         />
+        <Route
+  path="/resume-matcher"
+  element={<ResumeMatcherPage />}
+/>
 
         <Route
           path="/ai-assistant"

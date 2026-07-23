@@ -1,8 +1,12 @@
 import { api } from "./api";
 
+import type {
+  ResumeUploadResponse,
+} from "@/types/resume";
+
 export const uploadResume = async (
   file: File
-) => {
+): Promise<ResumeUploadResponse> => {
   const formData = new FormData();
 
   formData.append("file", file);

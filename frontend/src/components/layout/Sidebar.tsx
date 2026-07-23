@@ -5,7 +5,9 @@ import {
   Bot,
   FileText,
   Settings,
+  ScanSearch,
 } from "lucide-react";
+
 
 import SidebarItem from "./SidebarItem";
 
@@ -51,6 +53,12 @@ export default function Sidebar() {
   icon={<FileText size={20} />}
   label="Resume"
   to="/resume"
+/>
+
+<SidebarItem
+  icon={<ScanSearch size={20} />}
+  label="Resume Matcher"
+  to="/resume-matcher"
 />
 
   <SidebarItem
