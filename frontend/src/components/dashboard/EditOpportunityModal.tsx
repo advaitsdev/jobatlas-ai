@@ -42,7 +42,7 @@ toast.success("Opportunity updated successfully!");
 onClose();
   } catch (error) {
     console.error(error);
-    alert("Failed to update opportunity.");
+    toast.error("Failed to update opportunity.");
   }
 }}
         />

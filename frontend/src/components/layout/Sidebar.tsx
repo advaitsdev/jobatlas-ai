@@ -6,6 +6,7 @@ import {
   FileText,
   Settings,
   ScanSearch,
+  History,
 } from "lucide-react";
 
 
@@ -54,7 +55,11 @@ export default function Sidebar() {
   label="Resume"
   to="/resume"
 />
-
+<SidebarItem
+  icon={<History size={20} />}
+  label="Resume History"
+  to="/resume-history"
+/>
 <SidebarItem
   icon={<ScanSearch size={20} />}
   label="Resume Matcher"

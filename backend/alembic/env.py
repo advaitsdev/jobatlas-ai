@@ -6,7 +6,13 @@ from alembic import context
 
 from app.core.config import settings
 from app.models.base import BaseModel
-from app.models import User, Company, Opportunity
+from app.models import (
+    User,
+    Company,
+    Opportunity,
+    Resume,
+    ResumeAnalysis,
+)
 
 
 

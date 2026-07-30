@@ -23,3 +23,16 @@ export const uploadResume = async (
 
   return response.data;
 };
+
+export const getResume = async (
+  id: string
+) => {
+  const response = await api.get(
+    `/resume/${id}`
+  );
+
+  return response.data;
+};
+export const deleteResume = async (id: string) => {
+  await api.delete(`/resume/${id}`);
+};

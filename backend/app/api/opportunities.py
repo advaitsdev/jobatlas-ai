@@ -3,7 +3,7 @@ from fastapi import HTTPException
 
 from fastapi import APIRouter, Depends
 
-from app.db.session import get_db
+from app.db.dependencies import get_db
 from app.schemas.opportunity import (OpportunityCreate,OpportunityResponse,)
 from app.services.opportunity_service import OpportunityService
 from app.schemas.opportunity import (OpportunityCreate,OpportunityResponse,OpportunityUpdate,)

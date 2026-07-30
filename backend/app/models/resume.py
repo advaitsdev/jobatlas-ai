@@ -3,12 +3,12 @@ from datetime import datetime
 
 from sqlalchemy import String, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.database import Base
+from app.models.base import BaseModel
 
 
-class Resume(Base):
+class Resume(BaseModel):
     __tablename__ = "resumes"
 
     id: Mapped[UUID] = mapped_column(
@@ -20,6 +20,7 @@ class Resume(Base):
     user_id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("users.id"),
+        nullable=True,
     )
 
     filename: Mapped[str] = mapped_column(String)
@@ -31,4 +32,10 @@ class Resume(Base):
     uploaded_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.utcnow,
+    )
+
+    analyses = relationship(
+        "ResumeAnalysis",
+        back_populates="resume",
+        cascade="all, delete-orphan",
     )
