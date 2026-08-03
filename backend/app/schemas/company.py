@@ -23,3 +23,11 @@ class CompanyResponse(BaseModel):
     industry: str | None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class PaginatedCompanyResponse(BaseModel):
+    items: list[CompanyResponse]
+    total: int
+    page: int
+    limit: int
+    pages: int

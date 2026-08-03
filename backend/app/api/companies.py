@@ -1,4 +1,4 @@
-from typing import List
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -8,6 +8,7 @@ from app.schemas.company import (
     CompanyCreate,
     CompanyResponse,
     CompanyUpdate,
+    PaginatedCompanyResponse,
 )
 from app.services.company_service import CompanyService
 
@@ -32,13 +33,42 @@ def create_company(
 
 @router.get(
     "",
-    response_model=List[CompanyResponse],
+    response_model=PaginatedCompanyResponse,
 )
 def get_companies(
+    search: str | None = None,
+    page: int = 1,
+    limit: int = 10,
     db: Session = Depends(get_db),
 ):
     service = CompanyService(db)
-    return service.get_companies()
+
+    return service.get_companies(
+        search=search,
+        page=page,
+        limit=limit,
+    )
+
+
+@router.get(
+    "/{company_id}",
+    response_model=CompanyResponse,
+)
+def get_company(
+    company_id: UUID,
+    db: Session = Depends(get_db),
+):
+    service = CompanyService(db)
+
+    company = service.get_company(company_id)
+
+    if company is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Company not found",
+        )
+
+    return company
 
 
 @router.patch(
@@ -46,7 +76,7 @@ def get_companies(
     response_model=CompanyResponse,
 )
 def update_company(
-    company_id: str,
+    company_id: UUID,
     company: CompanyUpdate,
     db: Session = Depends(get_db),
 ):
@@ -68,7 +98,7 @@ def update_company(
 
 @router.delete("/{company_id}")
 def delete_company(
-    company_id: str,
+    company_id: UUID,
     db: Session = Depends(get_db),
 ):
     service = CompanyService(db)
@@ -82,5 +112,6 @@ def delete_company(
         )
 
     return {
-        "message": "Company deleted successfully"
+        "success": True,
+        "message": "Company deleted successfully.",
     }
