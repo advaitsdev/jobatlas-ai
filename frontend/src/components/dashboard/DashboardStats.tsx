@@ -1,59 +1,81 @@
-import type { Opportunity } from "@/types/opportunity";
+import {
+  BriefcaseBusiness,
+  Send,
+  Target,
+  Trophy,
+  XCircle,
+  Ghost,
+  MessageSquare,
+  LogOut,
+} from "lucide-react";
+
+import DashboardCard from "./DashboardCard";
+import type { DashboardSummary } from "@/types/dashboard";
 
 type DashboardStatsProps = {
-  opportunities: Opportunity[];
+  summary: DashboardSummary;
 };
 
 export default function DashboardStats({
-  opportunities,
+  summary,
 }: DashboardStatsProps) {
-  const total = opportunities.length;
-
-  const wishlist = opportunities.filter(
-    (o) => o.status === "wishlist"
-  ).length;
-
-  const applied = opportunities.filter(
-    (o) => o.status === "applied"
-  ).length;
-
-  const interview = opportunities.filter(
-    (o) => o.status === "interview"
-  ).length;
-
-  const offer = opportunities.filter(
-    (o) => o.status === "offer"
-  ).length;
-
-  const rejected = opportunities.filter(
-    (o) => o.status === "rejected"
-  ).length;
-
-  const stats = [
-    { label: "Total Jobs", value: total, emoji: "📄" },
-    { label: "Wishlist", value: wishlist, emoji: "⭐" },
-    { label: "Applied", value: applied, emoji: "📨" },
-    { label: "Interviews", value: interview, emoji: "🎯" },
-    { label: "Offers", value: offer, emoji: "🏆" },
-    { label: "Rejected", value: rejected, emoji: "❌" },
-  ];
-
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-      {stats.map((stat) => (
-        <div
-          key={stat.label}
-          className="rounded-xl border border-slate-700 bg-slate-800 p-5"
-        >
-          <p className="text-slate-400">
-            {stat.emoji} {stat.label}
-          </p>
+    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <DashboardCard
+        title="Total Applications"
+        value={summary.total_applications}
+        icon={BriefcaseBusiness}
+        iconColor="text-indigo-600"
+      />
 
-          <p className="mt-2 text-3xl font-bold text-white">
-            {stat.value}
-          </p>
-        </div>
-      ))}
+      <DashboardCard
+        title="Applied"
+        value={summary.applied}
+        icon={Send}
+        iconColor="text-blue-600"
+      />
+
+      <DashboardCard
+        title="Interviews"
+        value={summary.interview}
+        icon={Target}
+        iconColor="text-orange-500"
+      />
+
+      <DashboardCard
+        title="Offers"
+        value={summary.offer}
+        icon={Trophy}
+        iconColor="text-green-600"
+      />
+
+      <DashboardCard
+        title="Rejected"
+        value={summary.rejected}
+        icon={XCircle}
+        iconColor="text-red-600"
+      />
+
+      <DashboardCard
+        title="Ghosted"
+        value={summary.ghosted}
+        icon={Ghost}
+        iconColor="text-slate-600"
+      />
+
+      <DashboardCard
+        title="HR"
+        value={summary.hr}
+        icon={MessageSquare}
+        iconColor="text-purple-600"
+      />
+
+      <DashboardCard
+        title="Withdrawn"
+        value={summary.withdrawn}
+        icon={LogOut}
+        iconColor="text-gray-600"
+      />
     </div>
   );
 }

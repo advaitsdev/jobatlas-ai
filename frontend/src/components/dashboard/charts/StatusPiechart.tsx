@@ -1,76 +1,56 @@
-import ChartCard from "./ChartCard";
 import {
   PieChart,
   Pie,
-  Cell,
   Tooltip,
+  Cell,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
 
-import type { Opportunity } from "@/types/opportunity";
+import ChartCard from "./ChartCard";
+import type { StatusBreakdown } from "@/types/dashboard";
 
 type Props = {
-  opportunities: Opportunity[];
+  data: StatusBreakdown[];
 };
 
 const COLORS = [
   "#3b82f6",
-  "#facc15",
-  "#a855f7",
-  "#22c55e",
+  "#10b981",
+  "#f59e0b",
   "#ef4444",
+  "#8b5cf6",
+  "#14b8a6",
+  "#64748b",
+  "#ec4899",
 ];
 
 export default function StatusPieChart({
-  opportunities,
+  data,
 }: Props) {
-  const counts = opportunities.reduce(
-    (acc, opportunity) => {
-      acc[opportunity.status] =
-        (acc[opportunity.status] ?? 0) + 1;
-
-      return acc;
-    },
-    {} as Record<string, number>
-  );
-
-  const data = Object.entries(counts).map(
-    ([name, value]) => ({
-      name,
-      value,
-    })
-  );
-
   return (
-    <ChartCard title="Status Distribution">
-      <h2 className="mb-4 text-xl font-semibold text-white">
-        Status Distribution
-      </h2>
+    <ChartCard title="Application Status">
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={data}
+            dataKey="count"
+            nameKey="status"
+            outerRadius={100}
+            label
+          >
+            {data.map((_, index) => (
+              <Cell
+                key={index}
+                fill={COLORS[index % COLORS.length]}
+              />
+            ))}
+          </Pie>
 
-      <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={data}
-              dataKey="value"
-              nameKey="name"
-              outerRadius={110}
-              label
-            >
-              {data.map((_, index) => (
-                <Cell
-                  key={index}
-                  fill={
-                    COLORS[index % COLORS.length]
-                  }
-                />
-              ))}
-            </Pie>
-
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
     </ChartCard>
   );
 }

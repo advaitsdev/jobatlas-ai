@@ -1,9 +1,9 @@
 # Python
 backend/venv/
-backend/__pycache__/
+**/__pycache__/
 *.pyc
 
-# Environment variables
+# Environment
 backend/.env
 
 # Uploads
@@ -11,18 +11,13 @@ backend/uploads/
 
 # Node
 frontend/node_modules/
-
-# Build
 frontend/dist/
+extension/node_modules/
+extension/dist/
 
-# VS Code
+# IDE
 .vscode/
 
 # OS
 .DS_Store
 Thumbs.db
-
-# Logs
-*.log
-backend/uploads/
-backend/uploads/**

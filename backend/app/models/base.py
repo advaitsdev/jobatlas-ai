@@ -5,5 +5,4 @@ class BaseModel(DeclarativeBase):
     """
     Base class for all SQLAlchemy models.
     """
-
     pass

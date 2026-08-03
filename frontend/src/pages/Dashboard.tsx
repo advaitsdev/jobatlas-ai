@@ -1,36 +1,53 @@
+import { useQuery } from "@tanstack/react-query";
+import RecentApplications from "@/components/dashboard/RecentApplications";
+import StatusPieChart from "@/components/dashboard/charts/StatusPiechart";
 import DashboardStats from "@/components/dashboard/DashboardStats";
-import OpportunityList from "@/components/dashboard/OpportunityList";
+import { getDashboard } from "@/services/dashboard";
+import type { DashboardResponse } from "@/types/dashboard";
+import MonthlyChart from "@/components/dashboard/charts/MonthlyChart";
+import SourceChart from "@/components/dashboard/charts/SourceChart";
+import type { JobApplication } from "@/types/application";
 
-import { useOpportunities } from "@/hooks/useOpportunities";
-
+const test: JobApplication | null = null;
 export default function Dashboard() {
-  const {
-    opportunities,
-    setOpportunities,
-    loading,
-    error,
-  } = useOpportunities();
+  const { data, isLoading, isError } = useQuery<DashboardResponse>({
+    queryKey: ["dashboard"],
+    queryFn: getDashboard,
+  });
+
+  if (isLoading) {
+    return <h1 className="text-xl font-semibold">Loading dashboard...</h1>;
+  }
+
+  if (isError || !data) {
+    return (
+      <h1 className="text-xl font-semibold text-red-500">
+        Failed to load dashboard.
+      </h1>
+    );
+  }
 
   return (
-    <div>
-      <DashboardStats opportunities={opportunities} />
-      <div className="mt-8 mb-4 flex items-center justify-between">
-  <h2 className="text-2xl font-semibold text-white">
-    Recent Opportunities
-  </h2>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <p className="text-muted-foreground">
+          Welcome back 👋 Here's your job application overview.
+        </p>
+      </div>
 
-  <button className="text-blue-500 hover:text-blue-400">
-    View All →
-  </button>
+      <DashboardStats summary={data.summary} />
+      <div className="grid gap-6 lg:grid-cols-2">
+  <StatusPieChart data={data.status_breakdown} />
+
+  <MonthlyChart
+    data={data.monthly_applications}
+  />
+   <SourceChart
+    data={data.source_breakdown}
+  />
+   <RecentApplications />
 </div>
-
-      <OpportunityList
-        opportunities={opportunities.slice(0, 5)}
-        setOpportunities={setOpportunities}
-        loading={loading}
-        error={error}
-        onEdit={() => {}}
-      />
     </div>
   );
 }

@@ -1,8 +1,13 @@
-import type { ReactNode } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 type ChartCardProps = {
   title: string;
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 export default function ChartCard({
@@ -10,12 +15,14 @@ export default function ChartCard({
   children,
 }: ChartCardProps) {
   return (
-    <div className="rounded-xl border border-slate-700 bg-slate-800 p-6 shadow-lg">
-      <h2 className="mb-6 text-xl font-semibold text-white">
-        {title}
-      </h2>
+    <Card className="h-full">
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
 
-      {children}
-    </div>
+      <CardContent className="h-[320px]">
+        {children}
+      </CardContent>
+    </Card>
   );
 }
