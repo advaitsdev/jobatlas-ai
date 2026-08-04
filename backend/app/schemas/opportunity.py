@@ -9,7 +9,7 @@ from app.models.enums import OpportunityStatus
 class OpportunityCreate(BaseModel):
     title: str
     company_id: UUID
-    user_id: UUID
+    user_id: UUID | None = None
 
     location: str | None = None
     employment_type: str | None = None
@@ -42,7 +42,7 @@ class OpportunityResponse(BaseModel):
 
     title: str
     company: CompanySummary
-    user_id: UUID
+    user_id: UUID | None
 
     location: str | None
     employment_type: str | None
@@ -58,3 +58,10 @@ class OpportunityResponse(BaseModel):
     notes: str | None
 
     model_config = ConfigDict(from_attributes=True)
+
+class PaginatedOpportunityResponse(BaseModel):
+    items: list[OpportunityResponse]
+    total: int
+    page: int
+    limit: int
+    pages: int

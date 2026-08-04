@@ -1,12 +1,17 @@
-from sqlalchemy.orm import Session
-from fastapi import HTTPException
+from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
 from app.db.dependencies import get_db
-from app.schemas.opportunity import (OpportunityCreate,OpportunityResponse,)
+from app.models.enums import OpportunityStatus
+from app.schemas.opportunity import (
+    OpportunityCreate,
+    OpportunityResponse,
+    OpportunityUpdate,
+    PaginatedOpportunityResponse,
+)
 from app.services.opportunity_service import OpportunityService
-from app.schemas.opportunity import (OpportunityCreate,OpportunityResponse,OpportunityUpdate,)
 
 router = APIRouter(
     prefix="/opportunities",
@@ -26,43 +31,57 @@ def create_opportunity(
     service = OpportunityService(db)
     return service.create_opportunity(opportunity)
 
-from typing import List
 
 @router.get(
     "",
-    response_model=List[OpportunityResponse],
+    response_model=PaginatedOpportunityResponse,
 )
 def get_opportunities(
-    db: Session = Depends(get_db),
-):
-    service = OpportunityService(db)
-    return service.get_opportunities()
-
-@router.delete("/{opportunity_id}")
-def delete_opportunity(
-    opportunity_id: str,
+    search: str | None = None,
+    status: OpportunityStatus | None = None,
+    page: int = 1,
+    limit: int = 10,
     db: Session = Depends(get_db),
 ):
     service = OpportunityService(db)
 
-    deleted = service.delete_opportunity(opportunity_id)
+    return service.get_opportunities(
+        search=search,
+        status=status,
+        page=page,
+        limit=limit,
+    )
 
-    if deleted is None:
+
+@router.get(
+    "/{opportunity_id}",
+    response_model=OpportunityResponse,
+)
+def get_opportunity(
+    opportunity_id: UUID,
+    db: Session = Depends(get_db),
+):
+    service = OpportunityService(db)
+
+    opportunity = service.get_opportunity(
+        opportunity_id
+    )
+
+    if opportunity is None:
         raise HTTPException(
             status_code=404,
             detail="Opportunity not found",
         )
 
-    return {
-        "message": "Opportunity deleted successfully"
-    }
+    return opportunity
+
 
 @router.patch(
     "/{opportunity_id}",
     response_model=OpportunityResponse,
 )
 def update_opportunity(
-    opportunity_id: str,
+    opportunity_id: UUID,
     opportunity: OpportunityUpdate,
     db: Session = Depends(get_db),
 ):
@@ -80,3 +99,26 @@ def update_opportunity(
         )
 
     return updated
+
+
+@router.delete("/{opportunity_id}")
+def delete_opportunity(
+    opportunity_id: UUID,
+    db: Session = Depends(get_db),
+):
+    service = OpportunityService(db)
+
+    deleted = service.delete_opportunity(
+        opportunity_id
+    )
+
+    if deleted is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Opportunity not found",
+        )
+
+    return {
+        "success": True,
+        "message": "Opportunity deleted successfully.",
+    }

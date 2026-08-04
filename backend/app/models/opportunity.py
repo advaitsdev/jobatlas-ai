@@ -28,9 +28,9 @@ class Opportunity(UUIDMixin, TimestampMixin, BaseModel):
     back_populates="opportunities",
 )
 
-    user_id: Mapped[UUID] = mapped_column(
+    user_id: Mapped[UUID| None] = mapped_column(
     ForeignKey("users.id"),
-    nullable=False,
+    nullable=True,
 )
 
     location: Mapped[str | None] = mapped_column(

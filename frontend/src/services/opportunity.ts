@@ -1,45 +1,59 @@
 import { api } from "./api";
 
-export const getOpportunities = async () => {
-  const response = await api.get("/opportunities");
-  return response.data;
+import type {
+  Opportunity,
+  PaginatedOpportunities,
+  CreateOpportunityRequest,
+  UpdateOpportunityRequest,
+  OpportunityStatus,
+} from "@/types/opportunity";
+
+type GetOpportunitiesParams = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: OpportunityStatus;
 };
 
-export const deleteOpportunity = async (id: string) => {
-  const response = await api.delete(`/opportunities/${id}`);
-  return response.data;
-};
+export async function getOpportunities(
+  params: GetOpportunitiesParams = {}
+): Promise<PaginatedOpportunities> {
+  const { data } = await api.get("/opportunities", {
+    params,
+  });
 
-export const createOpportunity = async (data: {
-  title: string;
-  company_id: string;
-  user_id: string;
-  location: string;
-  employment_type: string;
-  salary: string;
-  deadline: string;
-  notes: string;
-}) => {
-  const response = await api.post("/opportunities", data);
-  return response.data;
-};
+  return data;
+}
 
-export const updateOpportunity = async (
-  id: string,
-  data: {
-    title: string;
-    company_id: string;
-    location: string;
-    employment_type: string;
-    salary: string;
-    deadline: string;
-    notes: string;
-  }
-) => {
-  const response = await api.patch(
-    `/opportunities/${id}`,
-    data
+export async function createOpportunity(
+  payload: CreateOpportunityRequest
+): Promise<Opportunity> {
+  const { data } = await api.post(
+    "/opportunities",
+    payload
   );
 
-  return response.data;
-};
+  return data;
+}
+
+export async function updateOpportunity(
+  id: string,
+  payload: UpdateOpportunityRequest
+): Promise<Opportunity> {
+  const { data } = await api.patch(
+    `/opportunities/${id}`,
+    payload
+  );
+
+  return data;
+}
+
+export async function deleteOpportunity(
+  id: string
+) {
+  const { data } = await api.delete(
+    `/opportunities/${id}`
+  );
+
+  return data;
+}
