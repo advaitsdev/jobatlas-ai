@@ -1,9 +1,10 @@
 import json
+from unittest import result
 
 from google import genai
 
 from app.core.config import settings
-
+from app.schemas.resume_analysis import ResumeAnalysisResult
 
 class AIResumeService:
     def __init__(self):
@@ -126,13 +127,14 @@ Resume:
         result = json.loads(cleaned)
 
 # ---------- Normalize Experience ----------
+        # ---------- Normalize Experience ----------
         for experience in result.get("experience", []):
             if "description" in experience:
                 experience["highlights"] = experience.pop("description")
 
-# ---------- Normalize Projects ----------
+        # ---------- Normalize Projects ----------
         for project in result.get("projects", []):
             if "description" in project:
                 project["highlights"] = project.pop("description")
 
-        return result
+        return ResumeAnalysisResult.model_validate(result)

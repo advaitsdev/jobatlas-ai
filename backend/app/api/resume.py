@@ -6,7 +6,10 @@ from fastapi import Depends
 from app.services.job_match_service import JobMatchService
 from app.db.session import get_db
 from app.repositories.resume_repository import ResumeRepository
-from app.repositories.resume_analysis_repository import ResumeAnalysisRepository
+from app.services.pdf_service import PDFService
+from app.services.ai_resume_service import AIResumeService
+from app.services.resume_service import ResumeService
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -33,48 +36,12 @@ async def upload_resume(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
-    if file.content_type != "application/pdf":
-        raise HTTPException(
-            status_code=400,
-            detail="Only PDF files are allowed.",
-        )
+    service = ResumeService(db)
 
-    file_path = UPLOAD_DIR / file.filename
-
-    with file_path.open("wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    # Save resume metadata
-    resume = ResumeRepository.create(
-        db=db,
-        user_id=None,  # Temporary until authentication is implemented
-        filename=file.filename,
-        filepath=str(file_path),
-        filesize=str(file_path.stat().st_size),
+    return await service.upload_resume(
+        file,
+        UPLOAD_DIR,
     )
-
-    # Extract resume text
-    text = PDFService.extract_text(
-        str(file_path)
-    )
-
-    # Run AI analysis
-    ai_service = AIResumeService()
-    analysis = ai_service.analyze_resume(text)
-
-    # Save analysis
-    ResumeAnalysisRepository.create(
-        db=db,
-        resume_id=resume.id,
-        ats_score=analysis.get("ats_score", 0),
-        analysis_json=analysis,
-    )
-
-    return {
-        "success": True,
-        "resume_id": str(resume.id),
-        "analysis": analysis,
-    }
 
 @router.post("/match")
 async def match_resume(

@@ -1,42 +1,85 @@
-from datetime import datetime
+from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, Integer, JSON
+from sqlalchemy import Float, ForeignKey, JSON, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
+from app.models.mixins import TimestampMixin, UUIDMixin
+
+if TYPE_CHECKING:
+    from app.models.resume import Resume
 
 
-class ResumeAnalysis(BaseModel):
+class ResumeAnalysis(
+    UUIDMixin,
+    TimestampMixin,
+    BaseModel,
+):
     __tablename__ = "resume_analyses"
-
-    id: Mapped[int] = mapped_column(
-        Integer,
-        primary_key=True,
-        index=True,
-    )
 
     resume_id: Mapped[UUID] = mapped_column(
         ForeignKey("resumes.id"),
         nullable=False,
+        unique=True,
     )
 
-    ats_score: Mapped[int] = mapped_column(
-        Integer,
-        nullable=False,
+    resume: Mapped["Resume"] = relationship(
+        back_populates="analysis",
     )
 
-    analysis_json: Mapped[dict] = mapped_column(
+    name: Mapped[str | None] = mapped_column(
+        nullable=True,
+    )
+
+    email: Mapped[str | None] = mapped_column(
+        nullable=True,
+    )
+
+    phone: Mapped[str | None] = mapped_column(
+        nullable=True,
+    )
+
+    education: Mapped[list] = mapped_column(
         JSON,
-        nullable=False,
+        default=list,
     )
 
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=datetime.utcnow,
+    experience: Mapped[list] = mapped_column(
+        JSON,
+        default=list,
     )
 
-    resume = relationship(
-        "Resume",
-        back_populates="analyses",
+    projects: Mapped[list] = mapped_column(
+        JSON,
+        default=list,
+    )
+
+    skills: Mapped[list] = mapped_column(
+        JSON,
+        default=list,
+    )
+
+    ats_score: Mapped[float] = mapped_column(
+        Float,
+        default=0,
+    )
+
+    best_role: Mapped[str | None] = mapped_column(
+        nullable=True,
+    )
+
+    strengths: Mapped[list] = mapped_column(
+        JSON,
+        default=list,
+    )
+
+    missing_skills: Mapped[list] = mapped_column(
+        JSON,
+        default=list,
+    )
+
+    recommendations: Mapped[list] = mapped_column(
+        JSON,
+        default=list,
     )

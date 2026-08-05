@@ -3,134 +3,79 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from app.models.resume_analysis import ResumeAnalysis
+from app.schemas.resume_analysis import ResumeAnalysisResult
 
 
 class ResumeAnalysisRepository:
+    def __init__(self, db: Session):
+        self.db = db
 
-    @staticmethod
     def create(
-        db: Session,
+        self,
         resume_id: UUID,
-        ats_score: int,
-        analysis_json: dict,
+        analysis: ResumeAnalysisResult,
     ) -> ResumeAnalysis:
-
-        analysis = ResumeAnalysis(
+        resume_analysis = ResumeAnalysis(
             resume_id=resume_id,
-            ats_score=ats_score,
-            analysis_json=analysis_json,
+            **analysis.model_dump(),
         )
 
-        db.add(analysis)
-        db.commit()
-        db.refresh(analysis)
+        self.db.add(resume_analysis)
+        self.db.commit()
+        self.db.refresh(resume_analysis)
 
-        return analysis
+        return resume_analysis
 
-    @staticmethod
     def get_by_resume(
-        db: Session,
-        resume_id: UUID,
-    ) -> list[ResumeAnalysis]:
-
-        return (
-            db.query(ResumeAnalysis)
-            .filter(
-                ResumeAnalysis.resume_id == resume_id
-            )
-            .order_by(
-                ResumeAnalysis.created_at.desc()
-            )
-            .all()
-        )
-
-    @staticmethod
-    def get_latest_by_resume(
-        db: Session,
+        self,
         resume_id: UUID,
     ) -> ResumeAnalysis | None:
-
         return (
-            db.query(ResumeAnalysis)
+            self.db.query(ResumeAnalysis)
             .filter(
                 ResumeAnalysis.resume_id == resume_id
             )
-            .order_by(
-                ResumeAnalysis.created_at.desc()
-            )
             .first()
         )
 
-    @staticmethod
+    def update(
+        self,
+        resume_id: UUID,
+        analysis: ResumeAnalysisResult,
+    ) -> ResumeAnalysis | None:
+        resume_analysis = self.get_by_resume(
+            resume_id
+        )
+
+        if resume_analysis is None:
+            return None
+
+        update_data = analysis.model_dump()
+
+        for key, value in update_data.items():
+            setattr(
+                resume_analysis,
+                key,
+                value,
+            )
+
+        self.db.commit()
+        self.db.refresh(resume_analysis)
+
+        return resume_analysis
+
     def delete(
-        db: Session,
-        analysis_id: int,
+        self,
+        resume_id: UUID,
     ) -> bool:
-
-        analysis = (
-            db.query(ResumeAnalysis)
-            .filter(
-                ResumeAnalysis.id == analysis_id
-            )
-            .first()
+        resume_analysis = self.get_by_resume(
+            resume_id
         )
 
-        if not analysis:
+        if resume_analysis is None:
             return False
 
-        db.delete(analysis)
-        db.commit()
-    
+        self.db.delete(resume_analysis)
+        self.db.commit()
+
         return True
-    @staticmethod
-    def get_latest_map(db: Session) -> dict:
-
-        analyses = (
-            db.query(ResumeAnalysis)
-            .order_by(
-                ResumeAnalysis.created_at.desc()
-            )
-            .all()
-        )
-
-        latest = {}
-
-        for analysis in analyses:
-            if analysis.resume_id not in latest:
-                latest[analysis.resume_id] = analysis
-
-        return latest
-    @staticmethod
-    def get_latest(
-        db: Session,
-        resume_id: UUID,
-    ) -> ResumeAnalysis | None:
-
-        return (
-            db.query(ResumeAnalysis)
-            .filter(
-                ResumeAnalysis.resume_id == resume_id
-            )
-            .order_by(
-                ResumeAnalysis.created_at.desc()
-            )
-            .first()
-        )
-    @staticmethod
-    def delete_by_resume(
-        db: Session,
-        resume_id: UUID,
-    ) -> None:
-
-        analyses = (
-            db.query(ResumeAnalysis)
-            .filter(
-                ResumeAnalysis.resume_id == resume_id
-            )
-            .all()
-        )
-
-        for analysis in analyses:
-            db.delete(analysis)
-
-        db.commit()

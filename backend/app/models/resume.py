@@ -6,6 +6,9 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.models.resume_analysis import ResumeAnalysis
 
 
 class Resume(BaseModel):
@@ -34,8 +37,9 @@ class Resume(BaseModel):
         default=datetime.utcnow,
     )
 
-    analyses = relationship(
-        "ResumeAnalysis",
-        back_populates="resume",
-        cascade="all, delete-orphan",
-    )
+    analysis: Mapped["ResumeAnalysis"] = relationship(
+    "ResumeAnalysis",
+    back_populates="resume",
+    uselist=False,
+    cascade="all, delete-orphan",
+)
