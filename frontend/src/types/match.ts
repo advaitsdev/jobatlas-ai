@@ -1,5 +1,9 @@
-export interface MatchAnalysis {
-  match_score: number;
+export interface JobMatchAnalysis {
+  overall_match: number;
+
+  ats_match: number;
+
+  recommended_role: string;
 
   matched_skills: string[];
 
@@ -7,5 +11,17 @@ export interface MatchAnalysis {
 
   keyword_matches: string[];
 
+  strengths: string[];
+
+  weaknesses: string[];
+
   recommendations: string[];
+
+  interview_questions: string[];
+}
+
+export interface JobMatchResponse {
+  success: boolean;
+
+  analysis: JobMatchAnalysis;
 }

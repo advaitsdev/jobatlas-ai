@@ -1,9 +1,10 @@
 import { NavLink } from "react-router-dom";
 
 const links = [
-  { name: "Dashboard", path: "/" },
+  { name: "Dashboard", path: "/dashboard" },
   { name: "Applications", path: "/applications" },
   { name: "Resume", path: "/resume" },
+  { name: "Resume Matcher", path: "/resume-matcher" },
   { name: "Companies", path: "/companies" },
   { name: "Opportunities", path: "/opportunities" },
   { name: "Settings", path: "/settings" },

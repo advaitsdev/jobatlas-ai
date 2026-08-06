@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "@/layouts/MainLayout";
-
+import ResumeMatcherPage from "@/pages/ResumeMatcher";
 import Dashboard from "@/pages/Dashboard";
 import Applications from "@/pages/Applications";
 import Resume from "@/pages/Resume";
@@ -25,6 +25,14 @@ export const router = createBrowserRouter([
       {
         path: "resume",
         element: <Resume />,
+      },
+      {
+        path: "resume",
+        element: <Resume />,
+      },
+      {
+        path: "resume-matcher",
+        element: <ResumeMatcherPage />,
       },
       {
         path: "companies",

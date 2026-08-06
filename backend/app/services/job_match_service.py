@@ -1,9 +1,10 @@
 import json
 
+
 from google import genai
 
 from app.core.config import settings
-
+from app.schemas.job_match import JobMatchResult
 
 class JobMatchService:
     def __init__(self):
@@ -18,38 +19,64 @@ class JobMatchService:
     ):
 
         prompt = f"""
-You are an expert ATS recruiter.
+You are an expert ATS recruiter, hiring manager, and career coach.
 
-Compare the following resume against the job description.
+Your job is to compare a candidate's resume against the provided job description.
+
+Evaluate:
+
+1. Overall resume-job match
+2. ATS compatibility
+3. Matching skills
+4. Missing skills
+5. Important keyword matches
+6. Candidate strengths
+7. Candidate weaknesses
+8. Resume improvement recommendations
+9. Recommended job role
+10. Five interview questions based on the resume and job description
 
 Resume:
 
 {resume_text}
 
---------------------------------
+------------------------------------------------------------
 
 Job Description:
 
 {job_description}
 
---------------------------------
+------------------------------------------------------------
 
 Return ONLY valid JSON.
 
-Use this schema exactly:
+Use EXACTLY this schema:
 
 {{
-    "match_score": 0,
-    "matched_skills": [],
-    "missing_skills": [],
-    "keyword_matches": [],
-    "recommendations": []
+  "overall_match": 0,
+  "ats_match": 0,
+  "recommended_role": "",
+
+  "matched_skills": [],
+  "missing_skills": [],
+  "keyword_matches": [],
+
+  "strengths": [],
+  "weaknesses": [],
+
+  "recommendations": [],
+
+  "interview_questions": []
 }}
 
-Do not include markdown.
-Do not explain anything.
-"""
+Rules:
 
+- Return ONLY JSON.
+- No markdown.
+- No explanations.
+- Scores must be integers between 0 and 100.
+- Always return arrays, even if empty.
+"""
         response = self.client.models.generate_content(
             model="gemini-3.6-flash",
             contents=prompt,
@@ -62,4 +89,6 @@ Do not explain anything.
             .strip()
         )
 
-        return json.loads(cleaned)
+        result = json.loads(cleaned)
+        return JobMatchResult.model_validate(result)
+    

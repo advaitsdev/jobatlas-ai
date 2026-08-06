@@ -14,7 +14,7 @@ export const matchResume = async (
   );
 
   const response = await api.post(
-    "/resume/match",
+    "/ai-matching/match",
     formData,
     {
       headers: {

@@ -5,7 +5,7 @@ import MatchAnalysis from "./MatchAnalysis";
 
 import { matchResume } from "@/services/match";
 
-import type { MatchAnalysis as MatchAnalysisType } from "@/types/match";
+import type { JobMatchAnalysis } from "@/types/match";
 
 export default function ResumeMatcher() {
   const [file, setFile] =
@@ -15,7 +15,7 @@ export default function ResumeMatcher() {
     useState("");
 
   const [analysis, setAnalysis] =
-    useState<MatchAnalysisType | null>(null);
+    useState<JobMatchAnalysis | null>(null);
 
   const [loading, setLoading] =
     useState(false);
