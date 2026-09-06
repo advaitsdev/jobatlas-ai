@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import MainLayout from "@/layouts/MainLayout";
 import ResumeMatcherPage from "@/pages/ResumeMatcher";
@@ -16,16 +16,17 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <Navigate to="/dashboard" replace />,
+      },
+      {
+        path: "dashboard",
         element: <Dashboard />,
       },
       {
         path: "applications",
         element: <Applications />,
       },
-      {
-        path: "resume",
-        element: <Resume />,
-      },
+      
       {
         path: "resume",
         element: <Resume />,
