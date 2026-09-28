@@ -1,15 +1,6 @@
-
 from pathlib import Path
 import shutil
-from sqlalchemy.orm import Session
-from fastapi import Depends
-from app.services.job_match_service import JobMatchService
-from app.db.session import get_db
-from app.repositories.resume_repository import ResumeRepository
-from app.repositories.resume_analysis_repository import ResumeAnalysisRepository
-from app.services.pdf_service import PDFService
-from app.services.ai_resume_service import AIResumeService
-from app.services.resume_service import ResumeService
+from uuid import UUID
 
 from fastapi import (
     APIRouter,
@@ -19,14 +10,24 @@ from fastapi import (
     HTTPException,
     UploadFile,
 )
+from sqlalchemy.orm import Session
 
-from app.services.pdf_service import PDFService
+from app.db.session import get_db
+from app.repositories.resume_analysis_repository import (
+    ResumeAnalysisRepository,
+)
+from app.repositories.resume_repository import ResumeRepository
 from app.services.ai_resume_service import AIResumeService
+from app.services.job_match_service import JobMatchService
+from app.services.pdf_service import PDFService
+from app.services.resume_service import ResumeService
+
 
 router = APIRouter(
     prefix="/resume",
     tags=["Resume"],
 )
+
 
 UPLOAD_DIR = Path("uploads/resumes")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -43,6 +44,7 @@ async def upload_resume(
         file,
         UPLOAD_DIR,
     )
+
 
 @router.post("/match")
 async def match_resume(
@@ -75,6 +77,8 @@ async def match_resume(
         "success": True,
         "analysis": result,
     }
+
+
 @router.get("/history")
 def get_resume_history(
     db: Session = Depends(get_db),
@@ -93,12 +97,48 @@ def get_resume_history(
                 "id": resume.id,
                 "filename": resume.filename,
                 "uploaded_at": resume.uploaded_at,
-                "ats_score": analysis.ats_score if analysis else 0,
+                "ats_score": analysis.ats_score
+                if analysis
+                else 0,
             }
         )
 
     return history
-from uuid import UUID
+
+
+@router.get("/{resume_id}/skills")
+def get_resume_skills(
+    resume_id: UUID,
+    db: Session = Depends(get_db),
+):
+    resume = ResumeRepository.get_by_id(
+        db,
+        resume_id,
+    )
+
+    if resume is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Resume not found",
+        )
+
+    analysis = (
+        ResumeAnalysisRepository(db)
+        .get_by_resume(resume_id)
+    )
+
+    if analysis is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Resume analysis not found",
+        )
+
+    return {
+        "resume_id": resume_id,
+        "skills": analysis.skills or [],
+    }
+
+
 @router.get("/{resume_id}")
 def get_resume(
     resume_id: UUID,
@@ -128,8 +168,12 @@ def get_resume(
             "filesize": resume.filesize,
             "uploaded_at": resume.uploaded_at,
         },
-        "analysis": analysis.analysis_json if analysis else None,
+        "analysis": analysis.analysis_json
+        if analysis
+        else None,
     }
+
+
 @router.delete("/{resume_id}")
 def delete_resume(
     resume_id: UUID,

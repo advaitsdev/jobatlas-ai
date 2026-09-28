@@ -9,7 +9,11 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { getResumeHistory } from "@/services/resume";
+import {
+  getResumeHistory,
+  getResumeSkills,
+} from "@/services/resume";
+
 import { api } from "@/services/api";
 
 import type { ResumeHistoryItem } from "@/types/resume";
@@ -29,11 +33,21 @@ type SkillGapResponse = {
 export default function Skills() {
   const [resumes, setResumes] = useState<ResumeHistoryItem[]>([]);
   const [selectedResumeId, setSelectedResumeId] = useState("");
-  const [data, setData] = useState<SkillGapResponse | null>(null);
+
+  const [skills, setSkills] = useState<string[]>([]);
+
+  const [data, setData] =
+    useState<SkillGapResponse | null>(null);
 
   const [loading, setLoading] = useState(true);
-  const [loadingGaps, setLoadingGaps] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loadingGaps, setLoadingGaps] =
+    useState(false);
+
+  const [loadingSkills, setLoadingSkills] =
+    useState(false);
+
+  const [error, setError] =
+    useState<string | null>(null);
 
   useEffect(() => {
     const loadResumes = async () => {
@@ -41,16 +55,25 @@ export default function Skills() {
         setLoading(true);
         setError(null);
 
-        const history = await getResumeHistory();
+        const history =
+          await getResumeHistory();
 
         setResumes(history);
 
         if (history.length > 0) {
-          setSelectedResumeId(history[0].id);
+          setSelectedResumeId(
+            history[0].id
+          );
         }
       } catch (error) {
-        console.error("Failed to load resumes:", error);
-        setError("Failed to load your resumes.");
+        console.error(
+          "Failed to load resumes:",
+          error
+        );
+
+        setError(
+          "Failed to load your resumes."
+        );
       } finally {
         setLoading(false);
       }
@@ -64,27 +87,48 @@ export default function Skills() {
       return;
     }
 
-    const loadSkillGaps = async () => {
+    const loadSkillData = async () => {
       try {
         setLoadingGaps(true);
+        setLoadingSkills(true);
         setError(null);
 
-        const response = await api.get("/opportunities/skill-gaps", {
-          params: {
-            resume_id: selectedResumeId,
-          },
-        });
+        const [gapResponse, skillResponse] =
+          await Promise.all([
+            api.get(
+              "/opportunities/skill-gaps",
+              {
+                params: {
+                  resume_id:
+                    selectedResumeId,
+                },
+              }
+            ),
+            getResumeSkills(
+              selectedResumeId
+            ),
+          ]);
 
-        setData(response.data);
+        setData(gapResponse.data);
+        setSkills(
+          skillResponse.skills
+        );
       } catch (error) {
-        console.error("Failed to load skill gaps:", error);
-        setError("Failed to load skill gaps.");
+        console.error(
+          "Failed to load skill profile:",
+          error
+        );
+
+        setError(
+          "Failed to load your skill profile."
+        );
       } finally {
         setLoadingGaps(false);
+        setLoadingSkills(false);
       }
     };
 
-    loadSkillGaps();
+    loadSkillData();
   }, [selectedResumeId]);
 
   const topSkillGaps = useMemo(() => {
@@ -94,27 +138,45 @@ export default function Skills() {
 
     return [...data.skill_gaps]
       .sort((a, b) => {
-        if (b.opportunity_count !== a.opportunity_count) {
-          return b.opportunity_count - a.opportunity_count;
+        if (
+          b.opportunity_count !==
+          a.opportunity_count
+        ) {
+          return (
+            b.opportunity_count -
+            a.opportunity_count
+          );
         }
 
-        return b.percentage - a.percentage;
+        return (
+          b.percentage -
+          a.percentage
+        );
       })
       .slice(0, 5);
   }, [data]);
 
-  const averageGapCoverage = useMemo(() => {
-    if (!data || data.skill_gaps.length === 0) {
-      return 0;
-    }
+  const averageGapCoverage =
+    useMemo(() => {
+      if (
+        !data ||
+        data.skill_gaps.length === 0
+      ) {
+        return 0;
+      }
 
-    const total = data.skill_gaps.reduce(
-      (sum, gap) => sum + gap.percentage,
-      0
-    );
+      const total =
+        data.skill_gaps.reduce(
+          (sum, gap) =>
+            sum + gap.percentage,
+          0
+        );
 
-    return Math.round(total / data.skill_gaps.length);
-  }, [data]);
+      return Math.round(
+        total /
+          data.skill_gaps.length
+      );
+    }, [data]);
 
   if (loading) {
     return (
@@ -138,8 +200,10 @@ export default function Skills() {
           </h1>
 
           <p className="mt-2 max-w-2xl text-slate-500">
-            See how your skills line up with the opportunities you're tracking
-            and identify the gaps appearing most often.
+            See how your skills line up with
+            the opportunities you're tracking
+            and identify the gaps appearing
+            most often.
           </p>
         </div>
 
@@ -151,11 +215,18 @@ export default function Skills() {
 
             <select
               value={selectedResumeId}
-              onChange={(e) => setSelectedResumeId(e.target.value)}
+              onChange={(e) =>
+                setSelectedResumeId(
+                  e.target.value
+                )
+              }
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
             >
               {resumes.map((resume) => (
-                <option key={resume.id} value={resume.id}>
+                <option
+                  key={resume.id}
+                  value={resume.id}
+                >
                   {resume.filename}
                 </option>
               ))}
@@ -172,40 +243,107 @@ export default function Skills() {
 
       {resumes.length === 0 ? (
         <EmptyState />
-      ) : loadingGaps ? (
+      ) : loadingGaps ||
+        loadingSkills ? (
         <div className="flex min-h-[400px] items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="flex flex-col items-center gap-3">
             <Loader2 className="h-6 w-6 animate-spin text-slate-500" />
+
             <p className="text-sm text-slate-500">
-              Analyzing your tracked opportunities...
+              Analyzing your skill profile...
             </p>
           </div>
         </div>
       ) : data ? (
         <>
           {/* Overview */}
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-4">
             <OverviewCard
-              icon={<Target className="h-5 w-5" />}
+              icon={
+                <Code2 className="h-5 w-5" />
+              }
+              label="Your Skills"
+              value={skills.length}
+              description="Skills extracted from your resume"
+            />
+
+            <OverviewCard
+              icon={
+                <Target className="h-5 w-5" />
+              }
               label="Jobs Analyzed"
-              value={data.total_opportunities}
+              value={
+                data.total_opportunities
+              }
               description="Tracked opportunities"
             />
 
             <OverviewCard
-              icon={<AlertTriangle className="h-5 w-5" />}
+              icon={
+                <AlertTriangle className="h-5 w-5" />
+              }
               label="Skill Gaps"
-              value={data.skill_gaps.length}
+              value={
+                data.skill_gaps.length
+              }
               description="Skills missing from your resume"
             />
 
             <OverviewCard
-              icon={<TrendingUp className="h-5 w-5" />}
+              icon={
+                <TrendingUp className="h-5 w-5" />
+              }
               label="Gap Coverage"
               value={`${averageGapCoverage}%`}
-              description="Average job coverage across gaps"
+              description="Average coverage across identified gaps"
             />
           </div>
+
+          {/* Your skills */}
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100">
+                  <Code2 className="h-5 w-5 text-slate-700" />
+                </div>
+
+                <div>
+                  <h2 className="font-semibold text-slate-900">
+                    Your Skills
+                  </h2>
+
+                  <p className="mt-1 text-sm text-slate-500">
+                    Skills currently extracted
+                    from your selected resume.
+                  </p>
+                </div>
+              </div>
+
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                {skills.length} skills
+              </span>
+            </div>
+
+            {skills.length === 0 ? (
+              <div className="mt-6 rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
+                <p className="text-sm text-slate-500">
+                  No skills were extracted from
+                  this resume.
+                </p>
+              </div>
+            ) : (
+              <div className="mt-6 flex flex-wrap gap-2">
+                {skills.map((skill) => (
+                  <span
+                    key={skill}
+                    className="rounded-full border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-100"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            )}
+          </section>
 
           {/* Main grid */}
           <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
@@ -223,20 +361,24 @@ export default function Skills() {
                     </h2>
 
                     <p className="mt-1 text-sm text-slate-500">
-                      Skills appearing most frequently in jobs you don't fully
-                      match.
+                      Skills appearing most
+                      frequently in jobs you
+                      don't fully match.
                     </p>
                   </div>
                 </div>
 
-                {data.skill_gaps.length > 0 && (
+                {data.skill_gaps.length >
+                  0 && (
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-                    {data.skill_gaps.length} gaps
+                    {data.skill_gaps.length}{" "}
+                    gaps
                   </span>
                 )}
               </div>
 
-              {topSkillGaps.length === 0 ? (
+              {topSkillGaps.length ===
+              0 ? (
                 <div className="mt-8 rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
                   <CheckCircle2 className="mx-auto h-8 w-8 text-emerald-500" />
 
@@ -245,28 +387,32 @@ export default function Skills() {
                   </p>
 
                   <p className="mt-1 text-sm text-slate-500">
-                    Your current resume covers the required skills in the
+                    Your current resume
+                    covers the required
+                    skills in the
                     opportunities analyzed.
                   </p>
                 </div>
               ) : (
                 <div className="mt-7 space-y-6">
-                  {topSkillGaps.map((gap, index) => (
-                    <SkillGapRow
-                      key={gap.skill}
-                      gap={gap}
-                      rank={index + 1}
-                    />
-                  ))}
+                  {topSkillGaps.map(
+                    (gap, index) => (
+                      <SkillGapRow
+                        key={gap.skill}
+                        gap={gap}
+                        rank={index + 1}
+                      />
+                    )
+                  )}
                 </div>
               )}
             </section>
 
-            {/* Your profile */}
+            {/* Skill intelligence */}
             <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100">
-                  <Code2 className="h-5 w-5 text-slate-700" />
+                  <Target className="h-5 w-5 text-slate-700" />
                 </div>
 
                 <div>
@@ -275,12 +421,19 @@ export default function Skills() {
                   </h2>
 
                   <p className="mt-1 text-sm text-slate-500">
-                    A quick read of your current opportunity coverage.
+                    A quick read of your
+                    current opportunity
+                    coverage.
                   </p>
                 </div>
               </div>
 
               <div className="mt-7 space-y-5">
+                <InsightRow
+                  label="Resume skills"
+                  value={skills.length.toString()}
+                />
+
                 <InsightRow
                   label="Opportunities tracked"
                   value={data.total_opportunities.toString()}
@@ -294,8 +447,10 @@ export default function Skills() {
                 <InsightRow
                   label="Most requested gap"
                   value={
-                    topSkillGaps.length > 0
-                      ? topSkillGaps[0].skill
+                    topSkillGaps.length >
+                    0
+                      ? topSkillGaps[0]
+                          .skill
                       : "None"
                   }
                 />
@@ -307,16 +462,20 @@ export default function Skills() {
                 </p>
 
                 <p className="mt-2 text-sm leading-6 text-slate-600">
-                  Skills appearing across multiple opportunities can have a
-                  broader impact on your job matching than skills appearing in
-                  only one listing.
+                  Skills appearing across
+                  multiple opportunities
+                  can have a broader impact
+                  on your job matching than
+                  skills appearing in only
+                  one listing.
                 </p>
               </div>
             </section>
           </div>
 
           {/* Full gap list */}
-          {data.skill_gaps.length > 5 && (
+          {data.skill_gaps.length >
+            5 && (
             <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <div>
                 <h2 className="font-semibold text-slate-900">
@@ -324,47 +483,58 @@ export default function Skills() {
                 </h2>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  Every missing required skill found across your tracked
-                  opportunities.
+                  Every missing required
+                  skill found across your
+                  tracked opportunities.
                 </p>
               </div>
 
               <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {data.skill_gaps.map((gap) => (
-                  <div
-                    key={gap.skill}
-                    className="rounded-xl border border-slate-200 bg-slate-50 p-4"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-medium text-slate-900">
-                          {gap.skill}
-                        </p>
+                {data.skill_gaps.map(
+                  (gap) => (
+                    <div
+                      key={gap.skill}
+                      className="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-medium text-slate-900">
+                            {gap.skill}
+                          </p>
 
-                        <p className="mt-1 text-xs text-slate-500">
-                          {gap.opportunity_count}{" "}
-                          {gap.opportunity_count === 1 ? "job" : "jobs"}
-                        </p>
+                          <p className="mt-1 text-xs text-slate-500">
+                            {
+                              gap.opportunity_count
+                            }{" "}
+                            {gap.opportunity_count ===
+                            1
+                              ? "job"
+                              : "jobs"}
+                          </p>
+                        </div>
+
+                        <span className="text-xs font-semibold text-slate-600">
+                          {gap.percentage}%
+                        </span>
                       </div>
 
-                      <span className="text-xs font-semibold text-slate-600">
-                        {gap.percentage}%
-                      </span>
+                      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-200">
+                        <div
+                          className="h-full rounded-full bg-slate-800 transition-all duration-500"
+                          style={{
+                            width: `${Math.min(
+                              Math.max(
+                                gap.percentage,
+                                0
+                              ),
+                              100
+                            )}%`,
+                          }}
+                        />
+                      </div>
                     </div>
-
-                    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-200">
-                      <div
-                        className="h-full rounded-full bg-slate-800 transition-all duration-500"
-                        style={{
-                          width: `${Math.min(
-                            Math.max(gap.percentage, 0),
-                            100
-                          )}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  )
+                )}
               </div>
             </section>
           )}
@@ -399,13 +569,17 @@ function OverviewCard({
         </span>
       </div>
 
-      <p className="mt-5 text-sm font-medium text-slate-500">{label}</p>
+      <p className="mt-5 text-sm font-medium text-slate-500">
+        {label}
+      </p>
 
       <p className="mt-1 text-3xl font-bold tracking-tight text-slate-900">
         {value}
       </p>
 
-      <p className="mt-1 text-xs text-slate-400">{description}</p>
+      <p className="mt-1 text-xs text-slate-400">
+        {description}
+      </p>
     </div>
   );
 }
@@ -415,7 +589,10 @@ type SkillGapRowProps = {
   rank: number;
 };
 
-function SkillGapRow({ gap, rank }: SkillGapRowProps) {
+function SkillGapRow({
+  gap,
+  rank,
+}: SkillGapRowProps) {
   return (
     <div>
       <div className="mb-2 flex items-center gap-3">
@@ -435,8 +612,12 @@ function SkillGapRow({ gap, rank }: SkillGapRowProps) {
           </div>
 
           <p className="mt-0.5 text-xs text-slate-500">
-            Required by {gap.opportunity_count}{" "}
-            {gap.opportunity_count === 1 ? "job" : "jobs"}
+            Required by{" "}
+            {gap.opportunity_count}{" "}
+            {gap.opportunity_count ===
+            1
+              ? "job"
+              : "jobs"}
           </p>
         </div>
       </div>
@@ -445,7 +626,13 @@ function SkillGapRow({ gap, rank }: SkillGapRowProps) {
         <div
           className="h-full rounded-full bg-slate-800 transition-all duration-700"
           style={{
-            width: `${Math.min(Math.max(gap.percentage, 0), 100)}%`,
+            width: `${Math.min(
+              Math.max(
+                gap.percentage,
+                0
+              ),
+              100
+            )}%`,
           }}
         />
       </div>
@@ -458,10 +645,15 @@ type InsightRowProps = {
   value: string;
 };
 
-function InsightRow({ label, value }: InsightRowProps) {
+function InsightRow({
+  label,
+  value,
+}: InsightRowProps) {
   return (
     <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-4 last:border-0 last:pb-0">
-      <span className="text-sm text-slate-500">{label}</span>
+      <span className="text-sm text-slate-500">
+        {label}
+      </span>
 
       <span className="max-w-[55%] truncate text-right text-sm font-semibold text-slate-900">
         {value}
@@ -482,8 +674,11 @@ function EmptyState() {
       </h2>
 
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-        Upload and analyze a resume first. Once you have a resume, JobAtlasAI
-        can compare its skills against the opportunities you're tracking.
+        Upload and analyze a resume
+        first. Once you have a resume,
+        JobAtlasAI can compare its skills
+        against the opportunities you're
+        tracking.
       </p>
     </div>
   );

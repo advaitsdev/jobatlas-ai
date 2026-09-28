@@ -4,6 +4,11 @@ import type {
   ResumeUploadResponse,
 } from "@/types/resume";
 
+export interface ResumeSkillsResponse {
+  resume_id: string;
+  skills: string[];
+}
+
 export const uploadResume = async (
   file: File
 ): Promise<ResumeUploadResponse> => {
@@ -33,12 +38,26 @@ export const getResume = async (
 
   return response.data;
 };
-export const deleteResume = async (id: string) => {
+
+export const deleteResume = async (
+  id: string
+) => {
   await api.delete(`/resume/${id}`);
 };
+
 export const getResumeHistory = async () => {
   const response = await api.get(
     "/resume/history"
+  );
+
+  return response.data;
+};
+
+export const getResumeSkills = async (
+  id: string
+): Promise<ResumeSkillsResponse> => {
+  const response = await api.get(
+    `/resume/${id}/skills`
   );
 
   return response.data;
