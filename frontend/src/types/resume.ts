@@ -45,3 +45,9 @@ export interface ResumeUploadResponse {
   success: boolean;
   analysis: ResumeAnalysis;
 }
+export interface ResumeHistoryItem {
+  id: string;
+  filename: string;
+  uploaded_at: string;
+  ats_score: number;
+}

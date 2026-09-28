@@ -65,7 +65,7 @@ export default function Opportunities() {
 
       {isLoading ? (
         <OpportunityTableSkeleton />
-      ) : data?.items.length === 0 ? (
+      ) : !data || data.items.length === 0 ? (
         <OpportunityEmptyState />
       ) : (
         <>
@@ -75,8 +75,8 @@ export default function Opportunities() {
 
           <OpportunityPagination
             page={page}
-            totalPages={data.pages}
-            onPageChange={setPage}
+            pages={data.pages}
+            setPage={setPage}
           />
         </>
       )}

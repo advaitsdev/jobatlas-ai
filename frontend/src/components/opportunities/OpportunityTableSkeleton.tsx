@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function ApplicationTableSkeleton() {
+export default function OpportunityTableSkeleton() {
   return (
     <div className="space-y-4">
       {Array.from({ length: 8 }).map((_, index) => (

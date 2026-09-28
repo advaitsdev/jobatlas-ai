@@ -19,6 +19,15 @@ class OpportunityCreate(BaseModel):
     deadline: date | None = None
     notes: str | None = None
 
+    # Job Description
+    job_description: str | None = None
+    required_skills: list[str] | None = None
+    preferred_skills: list[str] | None = None
+    responsibilities: list[str] | None = None
+    qualifications: list[str] | None = None
+    experience_required: str | None = None
+    education_required: str | None = None
+
 
 class OpportunityUpdate(BaseModel):
     title: str | None = None
@@ -31,12 +40,44 @@ class OpportunityUpdate(BaseModel):
     deadline: date | None = None
     notes: str | None = None
 
+    # Job Description
+    job_description: str | None = None
+    required_skills: list[str] | None = None
+    preferred_skills: list[str] | None = None
+    responsibilities: list[str] | None = None
+    qualifications: list[str] | None = None
+    experience_required: str | None = None
+    education_required: str | None = None
+
+
+class JobDescriptionParseRequest(BaseModel):
+    job_description: str
+
+
+class JobDescriptionParseResponse(BaseModel):
+    title: str | None = None
+    location: str | None = None
+    employment_type: str | None = None
+
+    required_skills: list[str] = []
+    preferred_skills: list[str] = []
+
+    responsibilities: list[str] = []
+    qualifications: list[str] = []
+
+    experience_required: str | None = None
+    education_required: str | None = None
+
+
 class CompanySummary(BaseModel):
     id: UUID
     name: str
 
-    model_config = ConfigDict(from_attributes=True)
-    
+    model_config = ConfigDict(
+        from_attributes=True,
+    )
+
+
 class OpportunityResponse(BaseModel):
     id: UUID
 
@@ -57,7 +98,19 @@ class OpportunityResponse(BaseModel):
 
     notes: str | None
 
-    model_config = ConfigDict(from_attributes=True)
+    # Job Description
+    job_description: str | None
+    required_skills: list[str] | None
+    preferred_skills: list[str] | None
+    responsibilities: list[str] | None
+    qualifications: list[str] | None
+    experience_required: str | None
+    education_required: str | None
+
+    model_config = ConfigDict(
+        from_attributes=True,
+    )
+
 
 class PaginatedOpportunityResponse(BaseModel):
     items: list[OpportunityResponse]

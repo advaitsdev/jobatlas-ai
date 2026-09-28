@@ -1,4 +1,5 @@
 import ResumeUpload from "@/components/Resume/ResumeUpload";
+import ResumeOptimizer from "@/components/Resume/ResumeOptimizer";
 
 export default function Resume() {
   return (
@@ -13,7 +14,13 @@ export default function Resume() {
         </p>
       </div>
 
-      <ResumeUpload />
+      <div className="space-y-12">
+        <ResumeUpload />
+
+        <div className="border-t border-slate-800 pt-10">
+          <ResumeOptimizer />
+        </div>
+      </div>
     </div>
   );
 }

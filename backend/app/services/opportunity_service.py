@@ -18,7 +18,9 @@ class OpportunityService:
         self,
         opportunity_data: OpportunityCreate,
     ):
-        return self.repository.create(opportunity_data)
+        return self.repository.create(
+            opportunity_data
+        )
 
     def get_opportunities(
         self,
@@ -57,5 +59,5 @@ class OpportunityService:
         opportunity_id: UUID,
     ):
         return self.repository.delete(
-            opportunity_id,
+            opportunity_id
         )

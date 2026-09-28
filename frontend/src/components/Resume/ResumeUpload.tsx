@@ -1,62 +1,67 @@
-
 import ResumeAnalysis from "./ResumeAnalysis";
 import type { ResumeAnalysis as ResumeAnalysisType } from "@/types/resume";
+
 import { uploadResume } from "@/services/resume";
+
 import { toast } from "sonner";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { UploadCloud, FileText } from "lucide-react";
+
+import {
+  UploadCloud,
+  FileText,
+} from "lucide-react";
+
 
 export default function ResumeUpload() {
   const [selectedFile, setSelectedFile] =
     useState<File | null>(null);
-    const [uploading, setUploading] =
-  useState(false);
+
+  const [uploading, setUploading] =
+    useState(false);
+
   const [analysis, setAnalysis] =
     useState<ResumeAnalysisType | null>(null);
 
 
   const onDrop = useCallback(
-  async (acceptedFiles: File[]) => {
-    if (acceptedFiles.length === 0) return;
+    async (acceptedFiles: File[]) => {
+      if (acceptedFiles.length === 0) {
+        return;
+      }
 
-    const file = acceptedFiles[0];
+      const file = acceptedFiles[0];
 
-    setSelectedFile(file);
+      setSelectedFile(file);
 
-    try {
-      setUploading(true);
+      try {
+        setUploading(true);
 
-      const response = await uploadResume(file);
+        const response =
+          await uploadResume(file);
 
-setAnalysis(response.analysis);
+        setAnalysis(
+          response.analysis
+        );
 
-toast.success(
-  "Resume analyzed successfully!"
-);
-{uploading && (
-  <div className="rounded-xl bg-slate-900 p-6 text-center">
-    <p className="text-lg font-medium text-blue-400">
-      🤖 AI is analyzing your resume...
-    </p>
+        toast.success(
+          "Resume analyzed successfully!"
+        );
 
-    <p className="mt-2 text-slate-400">
-      This usually takes a few seconds.
-    </p>
-  </div>
-)}
-    } catch (error) {
-      console.error(error);
+      } catch (error) {
+        console.error(error);
 
-      toast.error(
-        "Failed to upload resume."
-      );
-    } finally {
-      setUploading(false);
-    }
-  },
-  []
-);
+        toast.error(
+          "Failed to upload resume."
+        );
+
+      } finally {
+        setUploading(false);
+      }
+    },
+    []
+  );
+
 
   const {
     getRootProps,
@@ -64,15 +69,22 @@ toast.success(
     isDragActive,
   } = useDropzone({
     onDrop,
+
     accept: {
       "application/pdf": [".pdf"],
     },
+
     maxFiles: 1,
-    maxSize: 5 * 1024 * 1024,
+
+    maxSize:
+      5 * 1024 * 1024,
   });
+
 
   return (
     <div className="space-y-6">
+
+      {/* Upload Area */}
 
       <div
         {...getRootProps()}
@@ -82,7 +94,10 @@ toast.success(
             : "border-slate-700 bg-slate-900 hover:border-blue-500"
         }`}
       >
-        <input {...getInputProps()} />
+
+        <input
+          {...getInputProps()}
+        />
 
         <UploadCloud
           size={60}
@@ -102,7 +117,11 @@ toast.success(
         <p className="mt-6 text-sm text-slate-500">
           PDF only • Maximum 5MB
         </p>
+
       </div>
+
+
+      {/* Selected File */}
 
       {selectedFile && (
         <div className="rounded-xl border border-slate-700 bg-slate-900 p-5">
@@ -121,7 +140,12 @@ toast.success(
               </p>
 
               <p className="text-sm text-slate-400">
-                {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                {(
+                  selectedFile.size /
+                  1024 /
+                  1024
+                ).toFixed(2)}{" "}
+                MB
               </p>
 
             </div>
@@ -130,11 +154,33 @@ toast.success(
 
         </div>
       )}
-    {analysis && (
-  <ResumeAnalysis
-    analysis={analysis}
-  />
-)}
+
+
+      {/* AI Analysis Loading */}
+
+      {uploading && (
+        <div className="rounded-xl bg-slate-900 p-6 text-center">
+
+          <p className="text-lg font-medium text-blue-400">
+            🤖 AI is analyzing your resume...
+          </p>
+
+          <p className="mt-2 text-sm text-slate-400">
+            This usually takes a few seconds.
+          </p>
+
+        </div>
+      )}
+
+
+      {/* Analysis */}
+
+      {analysis && (
+        <ResumeAnalysis
+          analysis={analysis}
+        />
+      )}
+
     </div>
   );
 }

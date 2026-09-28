@@ -6,6 +6,7 @@ from fastapi import Depends
 from app.services.job_match_service import JobMatchService
 from app.db.session import get_db
 from app.repositories.resume_repository import ResumeRepository
+from app.repositories.resume_analysis_repository import ResumeAnalysisRepository
 from app.services.pdf_service import PDFService
 from app.services.ai_resume_service import AIResumeService
 from app.services.resume_service import ResumeService

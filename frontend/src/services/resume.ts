@@ -36,3 +36,10 @@ export const getResume = async (
 export const deleteResume = async (id: string) => {
   await api.delete(`/resume/${id}`);
 };
+export const getResumeHistory = async () => {
+  const response = await api.get(
+    "/resume/history"
+  );
+
+  return response.data;
+};

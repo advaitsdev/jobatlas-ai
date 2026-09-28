@@ -38,6 +38,20 @@ class ResumeAnalysisRepository:
             .first()
         )
 
+    @staticmethod
+    def get_latest_map(
+        db: Session,
+    ) -> dict[UUID, ResumeAnalysis]:
+        analyses = (
+            db.query(ResumeAnalysis)
+            .all()
+        )
+
+        return {
+            analysis.resume_id: analysis
+            for analysis in analyses
+        }
+
     def update(
         self,
         resume_id: UUID,

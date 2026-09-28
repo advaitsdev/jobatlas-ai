@@ -7,6 +7,7 @@ const links = [
   { name: "Resume Matcher", path: "/resume-matcher" },
   { name: "Companies", path: "/companies" },
   { name: "Opportunities", path: "/opportunities" },
+  { name: "Skills", path: "/skills" },
   { name: "Settings", path: "/settings" },
 ];
 

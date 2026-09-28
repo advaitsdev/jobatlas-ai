@@ -3,11 +3,13 @@ from uuid import UUID
 from datetime import date
 
 from sqlalchemy import Date, Enum, ForeignKey, String, Text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
 from app.models.enums import OpportunityStatus
 from app.models.mixins import TimestampMixin, UUIDMixin
+
 if TYPE_CHECKING:
     from app.models.company import Company
 
@@ -21,17 +23,18 @@ class Opportunity(UUIDMixin, TimestampMixin, BaseModel):
     )
 
     company_id: Mapped[UUID] = mapped_column(
-    ForeignKey("companies.id"),
-    nullable=False,
-)
-    company: Mapped["Company"] = relationship(
-    back_populates="opportunities",
-)
+        ForeignKey("companies.id"),
+        nullable=False,
+    )
 
-    user_id: Mapped[UUID| None] = mapped_column(
-    ForeignKey("users.id"),
-    nullable=True,
-)
+    company: Mapped["Company"] = relationship(
+        back_populates="opportunities",
+    )
+
+    user_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("users.id"),
+        nullable=True,
+    )
 
     location: Mapped[str | None] = mapped_column(
         String(150),
@@ -71,5 +74,44 @@ class Opportunity(UUIDMixin, TimestampMixin, BaseModel):
 
     notes: Mapped[str | None] = mapped_column(
         Text,
+        nullable=True,
+    )
+
+    # ---------------------------------------------------------
+    # Job Description / Parsed Job Data
+    # ---------------------------------------------------------
+
+    job_description: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+    )
+
+    required_skills: Mapped[list[str] | None] = mapped_column(
+        JSONB,
+        nullable=True,
+    )
+
+    preferred_skills: Mapped[list[str] | None] = mapped_column(
+        JSONB,
+        nullable=True,
+    )
+
+    responsibilities: Mapped[list[str] | None] = mapped_column(
+        JSONB,
+        nullable=True,
+    )
+
+    qualifications: Mapped[list[str] | None] = mapped_column(
+        JSONB,
+        nullable=True,
+    )
+
+    experience_required: Mapped[str | None] = mapped_column(
+        String(150),
+        nullable=True,
+    )
+
+    education_required: Mapped[str | None] = mapped_column(
+        String(250),
         nullable=True,
     )

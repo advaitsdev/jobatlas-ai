@@ -2,11 +2,15 @@ import { useState } from "react";
 
 import { Pencil } from "lucide-react";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+
 import {
   Dialog,
   DialogContent,
@@ -34,30 +38,82 @@ export default function EditOpportunityDialog({
 }: Props) {
   const [open, setOpen] = useState(false);
 
-  const [form, setForm] = useState<OpportunityFormData>({
-    title: opportunity.title,
-    company_id: opportunity.company.id,
+  const createFormFromOpportunity =
+    (): OpportunityFormData => ({
+      title: opportunity.title,
 
-    location: opportunity.location ?? "",
-    employment_type: opportunity.employment_type ?? "",
+      company_id:
+        opportunity.company.id,
 
-    application_url: opportunity.application_url ?? "",
-    salary: opportunity.salary ?? "",
+      location:
+        opportunity.location ?? "",
 
-    applied_date: opportunity.applied_date ?? undefined,
-    deadline: opportunity.deadline ?? undefined,
+      employment_type:
+        opportunity.employment_type ?? "",
 
-    notes: opportunity.notes ?? "",
-  });
+      application_url:
+        opportunity.application_url ?? "",
 
-  const queryClient = useQueryClient();
+      salary:
+        opportunity.salary ?? "",
+
+      applied_date:
+        opportunity.applied_date ??
+        undefined,
+
+      deadline:
+        opportunity.deadline ??
+        undefined,
+
+      notes:
+        opportunity.notes ?? "",
+
+      // Job Description
+      job_description:
+        opportunity.job_description ?? "",
+
+      required_skills:
+        opportunity.required_skills ?? [],
+
+      preferred_skills:
+        opportunity.preferred_skills ?? [],
+
+      responsibilities:
+        opportunity.responsibilities ?? [],
+
+      qualifications:
+        opportunity.qualifications ?? [],
+
+      experience_required:
+        opportunity.experience_required ??
+        "",
+
+      education_required:
+        opportunity.education_required ??
+        "",
+    });
+
+  const [form, setForm] =
+    useState<OpportunityFormData>(
+      createFormFromOpportunity()
+    );
+
+  const queryClient =
+    useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (data: OpportunityFormData) =>
-      updateOpportunity(opportunity.id, data),
+    mutationFn: (
+      data: OpportunityFormData
+    ) =>
+      updateOpportunity(
+        opportunity.id,
+        data
+      ),
 
     onSuccess: () => {
-      toast.success("Opportunity updated!");
+      toast.success(
+        "Opportunity updated!"
+      );
 
       queryClient.invalidateQueries({
         queryKey: ["opportunities"],
@@ -67,7 +123,9 @@ export default function EditOpportunityDialog({
     },
 
     onError: () => {
-      toast.error("Failed to update opportunity.");
+      toast.error(
+        "Failed to update opportunity."
+      );
     },
   });
 
@@ -78,27 +136,9 @@ export default function EditOpportunityDialog({
         setOpen(value);
 
         if (value) {
-          setForm({
-            title: opportunity.title,
-            company_id: opportunity.company.id,
-
-            location: opportunity.location ?? "",
-            employment_type:
-              opportunity.employment_type ?? "",
-
-            application_url:
-              opportunity.application_url ?? "",
-
-            salary: opportunity.salary ?? "",
-
-            applied_date:
-              opportunity.applied_date ?? undefined,
-
-            deadline:
-              opportunity.deadline ?? undefined,
-
-            notes: opportunity.notes ?? "",
-          });
+          setForm(
+            createFormFromOpportunity()
+          );
         }
       }}
     >
@@ -113,7 +153,13 @@ export default function EditOpportunityDialog({
         }
       />
 
-      <DialogContent className="max-w-xl">
+      <DialogContent
+        className="
+          max-w-2xl
+          max-h-[90vh]
+          overflow-y-auto
+        "
+      >
         <DialogHeader>
           <DialogTitle>
             Edit Opportunity
@@ -128,7 +174,9 @@ export default function EditOpportunityDialog({
         <DialogFooter>
           <Button
             variant="outline"
-            onClick={() => setOpen(false)}
+            onClick={() =>
+              setOpen(false)
+            }
           >
             Cancel
           </Button>
@@ -138,13 +186,20 @@ export default function EditOpportunityDialog({
               mutation.mutate({
                 ...form,
                 applied_date:
-                  form.applied_date || undefined,
+                  form.applied_date ||
+                  undefined,
                 deadline:
-                  form.deadline || undefined,
+                  form.deadline ||
+                  undefined,
               })
             }
+            disabled={
+              mutation.isPending
+            }
           >
-            Save Changes
+            {mutation.isPending
+              ? "Saving..."
+              : "Save Changes"}
           </Button>
         </DialogFooter>
       </DialogContent>

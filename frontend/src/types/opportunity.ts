@@ -19,7 +19,6 @@ export interface Opportunity {
 
   user_id: string | null;
 
-
   location: string | null;
 
   employment_type: string | null;
@@ -35,6 +34,15 @@ export interface Opportunity {
   deadline: string | null;
 
   notes: string | null;
+
+  // Job Description
+  job_description: string | null;
+  required_skills: string[] | null;
+  preferred_skills: string[] | null;
+  responsibilities: string[] | null;
+  qualifications: string[] | null;
+  experience_required: string | null;
+  education_required: string | null;
 }
 
 export interface PaginatedOpportunities {
@@ -46,20 +54,29 @@ export interface PaginatedOpportunities {
 }
 
 export interface CreateOpportunityRequest {
-    title: string;
-    company_id: string;
-    user_id?: string;
+  title: string;
+  company_id: string;
+  user_id?: string;
 
-    location?: string;
-    employment_type?: string;
+  location?: string;
+  employment_type?: string;
 
-    application_url?: string;
-    salary?: string;
+  application_url?: string;
+  salary?: string;
 
-    applied_date?: string;
-    deadline?: string;
+  applied_date?: string;
+  deadline?: string;
 
-    notes?: string;
+  notes?: string;
+
+  // Job Description
+  job_description?: string;
+  required_skills?: string[];
+  preferred_skills?: string[];
+  responsibilities?: string[];
+  qualifications?: string[];
+  experience_required?: string;
+  education_required?: string;
 }
 
 export interface UpdateOpportunityRequest {
@@ -72,20 +89,39 @@ export interface UpdateOpportunityRequest {
   applied_date?: string;
   deadline?: string;
   notes?: string;
+
+  // Job Description
+  job_description?: string;
+  required_skills?: string[];
+  preferred_skills?: string[];
+  responsibilities?: string[];
+  qualifications?: string[];
+  experience_required?: string;
+  education_required?: string;
 }
+
 export interface OpportunityFormData {
-    title: string;
-    company_id: string;
-    user_id?: string;
+  title: string;
+  company_id: string;
+  user_id?: string;
 
-    location: string;
-    employment_type: string;
+  location: string;
+  employment_type: string;
 
-    application_url: string;
-    salary: string;
+  application_url: string;
+  salary: string;
 
-    applied_date?: string;
-    deadline?: string;
+  applied_date?: string;
+  deadline?: string;
 
-    notes: string;
+  notes: string;
+
+  // Job Description
+  job_description: string;
+  required_skills: string[];
+  preferred_skills: string[];
+  responsibilities: string[];
+  qualifications: string[];
+  experience_required: string;
+  education_required: string;
 }
