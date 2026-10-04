@@ -1,53 +1,64 @@
-from typing import TYPE_CHECKING
-from uuid import UUID
 from datetime import date
+from uuid import UUID
 
-from sqlalchemy import Date, Enum, ForeignKey, String, Text
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Date, ForeignKey, String, Text
+from sqlalchemy.dialects.postgresql import (
+    ENUM as PGEnum,
+    JSONB,
+    UUID as PGUUID,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
 from app.models.enums import OpportunityStatus
-from app.models.mixins import TimestampMixin, UUIDMixin
-
-if TYPE_CHECKING:
-    from app.models.company import Company
+from app.models.mixins import UUIDMixin, TimestampMixin
 
 
-class Opportunity(UUIDMixin, TimestampMixin, BaseModel):
+class Opportunity(
+    UUIDMixin,
+    TimestampMixin,
+    BaseModel,
+):
     __tablename__ = "opportunities"
 
     title: Mapped[str] = mapped_column(
-        String(150),
+        String(255),
         nullable=False,
     )
 
     company_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
         ForeignKey("companies.id"),
         nullable=False,
     )
 
-    company: Mapped["Company"] = relationship(
-        back_populates="opportunities",
-    )
-
-    user_id: Mapped[UUID | None] = mapped_column(
+    user_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
         ForeignKey("users.id"),
-        nullable=True,
+        nullable=False,
     )
 
     location: Mapped[str | None] = mapped_column(
-        String(150),
+        String(255),
         nullable=True,
     )
 
     employment_type: Mapped[str | None] = mapped_column(
-        String(50),
+        String(100),
+        nullable=True,
+    )
+
+    source: Mapped[str | None] = mapped_column(
+        String(100),
         nullable=True,
     )
 
     status: Mapped[OpportunityStatus] = mapped_column(
-        Enum(OpportunityStatus),
+        PGEnum(
+            OpportunityStatus,
+            name="opportunitystatus",
+            create_type=False,
+        ),
         default=OpportunityStatus.WISHLIST,
         nullable=False,
     )
@@ -58,7 +69,7 @@ class Opportunity(UUIDMixin, TimestampMixin, BaseModel):
     )
 
     salary: Mapped[str | None] = mapped_column(
-        String(100),
+        String(150),
         nullable=True,
     )
 
@@ -77,31 +88,27 @@ class Opportunity(UUIDMixin, TimestampMixin, BaseModel):
         nullable=True,
     )
 
-    # ---------------------------------------------------------
-    # Job Description / Parsed Job Data
-    # ---------------------------------------------------------
-
     job_description: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
     )
 
-    required_skills: Mapped[list[str] | None] = mapped_column(
+    required_skills: Mapped[list | None] = mapped_column(
         JSONB,
         nullable=True,
     )
 
-    preferred_skills: Mapped[list[str] | None] = mapped_column(
+    preferred_skills: Mapped[list | None] = mapped_column(
         JSONB,
         nullable=True,
     )
 
-    responsibilities: Mapped[list[str] | None] = mapped_column(
+    responsibilities: Mapped[list | None] = mapped_column(
         JSONB,
         nullable=True,
     )
 
-    qualifications: Mapped[list[str] | None] = mapped_column(
+    qualifications: Mapped[list | None] = mapped_column(
         JSONB,
         nullable=True,
     )
@@ -114,4 +121,14 @@ class Opportunity(UUIDMixin, TimestampMixin, BaseModel):
     education_required: Mapped[str | None] = mapped_column(
         String(250),
         nullable=True,
+    )
+
+    company = relationship(
+        "Company",
+        back_populates="opportunities",
+    )
+
+    user = relationship(
+        "User",
+        back_populates="opportunities",
     )

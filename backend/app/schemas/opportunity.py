@@ -13,6 +13,8 @@ class OpportunityCreate(BaseModel):
 
     location: str | None = None
     employment_type: str | None = None
+    source: str | None = None
+    status: OpportunityStatus = OpportunityStatus.WISHLIST
     application_url: str | None = None
     salary: str | None = None
     applied_date: date | None = None
@@ -33,6 +35,7 @@ class OpportunityUpdate(BaseModel):
     title: str | None = None
     location: str | None = None
     employment_type: str | None = None
+    source: str | None = None
     status: OpportunityStatus | None = None
     application_url: str | None = None
     salary: str | None = None
@@ -87,6 +90,7 @@ class OpportunityResponse(BaseModel):
 
     location: str | None
     employment_type: str | None
+    source: str | None
 
     status: OpportunityStatus
 
