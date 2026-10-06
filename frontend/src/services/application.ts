@@ -49,3 +49,12 @@ export async function deleteApplication(id: string) {
   const { data } = await api.delete(`/applications/${id}`);
   return data;
 }
+export async function getApplication(
+  id: string
+) {
+  const { data } = await api.get(
+    `/applications/${id}`
+  );
+
+  return data;
+}
