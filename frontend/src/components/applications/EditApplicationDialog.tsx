@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Pencil } from "lucide-react";
-
-
 
 import {
   Dialog,
@@ -27,10 +25,12 @@ import ApplicationForm from "./ApplicationForm";
 
 type Props = {
   application: JobApplication;
+  trigger?: ReactElement;
 };
 
 export default function EditApplicationDialog({
   application,
+  trigger,
 }: Props) {
   const [open, setOpen] = useState(false);
 
@@ -91,12 +91,14 @@ export default function EditApplicationDialog({
     >
       <DialogTrigger
         render={
-          <Button
-            size="sm"
-            variant="outline"
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
+          trigger ?? (
+            <Button
+              size="sm"
+              variant="outline"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+          )
         }
       />
 

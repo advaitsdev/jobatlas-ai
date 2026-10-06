@@ -1,9 +1,9 @@
 from datetime import datetime
 from uuid import uuid4
 
-from sqlalchemy import Date, DateTime, String, Text
+from sqlalchemy import Date, DateTime, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
 
@@ -20,6 +20,13 @@ class JobApplication(BaseModel):
     user_id: Mapped[UUID | None] = mapped_column(
         UUID(as_uuid=True),
         nullable=True,
+    )
+
+    opportunity_id: Mapped[UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("opportunities.id", ondelete="SET NULL"),
+        nullable=True,
+        unique=True,
     )
 
     company: Mapped[str] = mapped_column(
@@ -76,4 +83,9 @@ class JobApplication(BaseModel):
         DateTime,
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
+    )
+
+    opportunity = relationship(
+        "Opportunity",
+        back_populates="application",
     )

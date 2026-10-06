@@ -1,27 +1,31 @@
 import ApplicationsOverTimeChart from "./charts/ApplicationsOverTimeChart";
-import type { Opportunity } from "@/types/opportunity";
 import TopCompaniesChart from "./charts/TopCompaniesChart";
 import StatusPieChart from "./charts/StatusPiechart";
 
+import type { ApplicationAnalytics } from "@/services/analytics";
+
 type DashboardAnalyticsProps = {
-  opportunities: Opportunity[];
+  analytics: ApplicationAnalytics;
 };
 
 export default function DashboardAnalytics({
-  opportunities,
+  analytics,
 }: DashboardAnalyticsProps) {
   return (
     <div className="mt-8 grid gap-6 lg:grid-cols-2">
-      <StatusPieChart opportunities={opportunities} />
+      <StatusPieChart
+        data={analytics.status_breakdown}
+      />
 
-    <TopCompaniesChart
-  opportunities={opportunities}
-/>
-<div className="lg:col-span-2">
-  <ApplicationsOverTimeChart
-    opportunities={opportunities}
-  />
-</div>
+      <TopCompaniesChart
+        data={analytics.company_breakdown}
+      />
+
+      <div className="lg:col-span-2">
+        <ApplicationsOverTimeChart
+          data={analytics.application_timeline}
+        />
+      </div>
     </div>
   );
 }

@@ -3,8 +3,7 @@ from datetime import date, timedelta
 
 from sqlalchemy.orm import Session
 
-from app.models.enums import OpportunityStatus
-from app.models.opportunity import Opportunity
+from app.models.job_application import JobApplication
 
 
 class AnalyticsService:
@@ -12,48 +11,23 @@ class AnalyticsService:
     def get_application_analytics(
         db: Session,
     ) -> dict:
-        opportunities = (
-            db.query(Opportunity)
-            .order_by(Opportunity.applied_date.asc())
+        applications = (
+            db.query(JobApplication)
+            .order_by(JobApplication.date_applied.asc())
             .all()
         )
 
-        total_opportunities = len(opportunities)
+        total_applications = len(applications)
 
         status_counts = Counter(
-            opportunity.status.value
-            for opportunity in opportunities
-        )
-
-        applied_opportunities = [
-            opportunity
-            for opportunity in opportunities
-            if opportunity.applied_date is not None
-        ]
-
-        total_applications = len(
-            applied_opportunities
-        )
-
-        rejected_count = status_counts.get(
-            OpportunityStatus.REJECTED.value,
-            0,
-        )
-
-        offer_count = status_counts.get(
-            OpportunityStatus.OFFER.value,
-            0,
-        )
-
-        interview_count = status_counts.get(
-            OpportunityStatus.INTERVIEW.value,
-            0,
+            application.status
+            for application in applications
         )
 
         application_to_rejection_ratio = (
             round(
                 (
-                    rejected_count
+                    status_counts.get("Rejected", 0)
                     / total_applications
                 )
                 * 100,
@@ -61,6 +35,16 @@ class AnalyticsService:
             )
             if total_applications
             else 0
+        )
+
+        interview_count = status_counts.get(
+            "Interview",
+            0,
+        )
+
+        offer_count = status_counts.get(
+            "Offer",
+            0,
         )
 
         application_to_interview_ratio = (
@@ -92,24 +76,20 @@ class AnalyticsService:
             else 0
         )
 
-        status_breakdown = []
-
-        for status in OpportunityStatus:
-            status_breakdown.append(
-                {
-                    "status": status.value,
-                    "count": status_counts.get(
-                        status.value,
-                        0,
-                    ),
-                }
-            )
+        status_breakdown = [
+            {
+                "status": status,
+                "count": count,
+            }
+            for status, count
+            in status_counts.most_common()
+        ]
 
         source_counter = Counter(
-            opportunity.source.strip()
-            if opportunity.source
+            application.source.strip()
+            if application.source
             else "Unknown"
-            for opportunity in applied_opportunities
+            for application in applications
         )
 
         source_breakdown = [
@@ -121,9 +101,26 @@ class AnalyticsService:
             in source_counter.most_common()
         ]
 
+        company_counter = Counter(
+            application.company.strip()
+            if application.company
+            else "Unknown"
+            for application in applications
+        )
+
+        company_breakdown = [
+            {
+                "company": company,
+                "count": count,
+            }
+            for company, count
+            in company_counter.most_common()
+        ]
+
         applications_by_date = Counter(
-            opportunity.applied_date.isoformat()
-            for opportunity in applied_opportunities
+            application.date_applied.isoformat()
+            for application in applications
+            if application.date_applied is not None
         )
 
         application_timeline = [
@@ -144,15 +141,15 @@ class AnalyticsService:
 
         applications_last_30_days = sum(
             1
-            for opportunity
-            in applied_opportunities
-            if opportunity.applied_date
+            for application in applications
+            if application.date_applied
+            and application.date_applied
             >= thirty_days_ago
         )
 
         return {
             "total_opportunities": (
-                total_opportunities
+                total_applications
             ),
             "total_applications": (
                 total_applications
@@ -165,6 +162,9 @@ class AnalyticsService:
             ),
             "source_breakdown": (
                 source_breakdown
+            ),
+            "company_breakdown": (
+                company_breakdown
             ),
             "application_timeline": (
                 application_timeline

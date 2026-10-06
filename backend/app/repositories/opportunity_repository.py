@@ -41,7 +41,10 @@ class OpportunityRepository:
         query = (
             self.db.query(Opportunity)
             .join(Company)
-            .options(joinedload(Opportunity.company))
+            .options(
+                joinedload(Opportunity.company),
+                joinedload(Opportunity.application),
+            )
         )
 
         if search:
@@ -49,7 +52,9 @@ class OpportunityRepository:
                 or_(
                     Opportunity.title.ilike(f"%{search}%"),
                     Company.name.ilike(f"%{search}%"),
-                    Opportunity.location.ilike(f"%{search}%"),
+                    Opportunity.location.ilike(
+                        f"%{search}%"
+                    ),
                 )
             )
 
@@ -61,7 +66,9 @@ class OpportunityRepository:
         total = query.count()
 
         opportunities = (
-            query.order_by(Opportunity.created_at.desc())
+            query.order_by(
+                Opportunity.created_at.desc()
+            )
             .offset((page - 1) * limit)
             .limit(limit)
             .all()
@@ -81,7 +88,10 @@ class OpportunityRepository:
     ):
         return (
             self.db.query(Opportunity)
-            .options(joinedload(Opportunity.company))
+            .options(
+                joinedload(Opportunity.company),
+                joinedload(Opportunity.application),
+            )
             .filter(Opportunity.id == opportunity_id)
             .first()
         )

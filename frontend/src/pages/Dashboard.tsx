@@ -1,14 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
+
 import RecentApplications from "@/components/dashboard/RecentApplications";
 import StatusPieChart from "@/components/dashboard/charts/StatusPiechart";
-import DashboardStats from "@/components/dashboard/DashboardStats";
-import { getDashboard } from "@/services/dashboard";
-import type { DashboardResponse } from "@/types/dashboard";
 import MonthlyChart from "@/components/dashboard/charts/MonthlyChart";
 import SourceChart from "@/components/dashboard/charts/SourceChart";
-import type { JobApplication } from "@/types/application";
+import TopCompaniesChart from "@/components/dashboard/charts/TopCompaniesChart";
+import DashboardStats from "@/components/dashboard/DashboardStats";
 
-const test: JobApplication | null = null;
+import { getDashboard } from "@/services/dashboard";
+
+import type { DashboardResponse } from "@/types/dashboard";
+
 export default function Dashboard() {
   const { data, isLoading, isError } = useQuery<DashboardResponse>({
     queryKey: ["dashboard"],
@@ -36,18 +38,27 @@ export default function Dashboard() {
         </p>
       </div>
 
-      <DashboardStats summary={data.summary} />
-      <div className="grid gap-6 lg:grid-cols-2">
-  <StatusPieChart data={data.status_breakdown} />
+      <DashboardStats
+        summary={data.summary}
+        applicationsLast30Days={data.applications_last_30_days}
+        interviewRate={data.application_to_interview_ratio}
+        offerRate={data.application_to_offer_ratio}
+        rejectionRate={data.application_to_rejection_ratio}
+      />
 
-  <MonthlyChart
-    data={data.monthly_applications}
-  />
-   <SourceChart
-    data={data.source_breakdown}
-  />
-   <RecentApplications />
-</div>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <StatusPieChart data={data.status_breakdown} />
+
+        <MonthlyChart data={data.monthly_applications} />
+
+        <SourceChart data={data.source_breakdown} />
+
+        <TopCompaniesChart data={data.company_breakdown} />
+
+        <div className="lg:col-span-2">
+          <RecentApplications />
+        </div>
+      </div>
     </div>
   );
 }

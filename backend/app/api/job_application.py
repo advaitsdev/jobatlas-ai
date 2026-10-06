@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -41,6 +41,7 @@ def create_application(
         status=application.status,
         notes=application.notes,
         date_applied=application.date_applied,
+        opportunity_id=application.opportunity_id,
     )
 
 
@@ -86,7 +87,6 @@ def get_applications(
 def get_application(
     application_id: UUID,
     db: Session = Depends(get_db),
-   
 ):
     application = JobApplicationRepository.get_by_id(
         db,

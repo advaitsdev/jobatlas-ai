@@ -50,6 +50,8 @@ export default function EditOpportunityDialog({
 
       employment_type:
         opportunity.employment_type ?? "",
+      source:
+        opportunity.source ?? "",
 
       application_url:
         opportunity.application_url ?? "",

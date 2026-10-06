@@ -7,6 +7,10 @@ import {
   Ghost,
   MessageSquare,
   LogOut,
+  CalendarDays,
+  Percent,
+  TrendingUp,
+  Ban,
 } from "lucide-react";
 
 import DashboardCard from "./DashboardCard";
@@ -14,10 +18,18 @@ import type { DashboardSummary } from "@/types/dashboard";
 
 type DashboardStatsProps = {
   summary: DashboardSummary;
+  applicationsLast30Days: number;
+  interviewRate: number;
+  offerRate: number;
+  rejectionRate: number;
 };
 
 export default function DashboardStats({
   summary,
+  applicationsLast30Days,
+  interviewRate,
+  offerRate,
+  rejectionRate,
 }: DashboardStatsProps) {
   return (
     <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -75,6 +87,34 @@ export default function DashboardStats({
         value={summary.withdrawn}
         icon={LogOut}
         iconColor="text-gray-600"
+      />
+
+      <DashboardCard
+        title="Last 30 Days"
+        value={applicationsLast30Days}
+        icon={CalendarDays}
+        iconColor="text-cyan-600"
+      />
+
+      <DashboardCard
+        title="Interview Rate"
+        value={`${interviewRate}%`}
+        icon={TrendingUp}
+        iconColor="text-orange-600"
+      />
+
+      <DashboardCard
+        title="Offer Rate"
+        value={`${offerRate}%`}
+        icon={Percent}
+        iconColor="text-green-600"
+      />
+
+      <DashboardCard
+        title="Rejection Rate"
+        value={`${rejectionRate}%`}
+        icon={Ban}
+        iconColor="text-red-600"
       />
     </div>
   );

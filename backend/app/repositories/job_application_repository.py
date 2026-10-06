@@ -1,10 +1,10 @@
 import math
 from uuid import UUID
 
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.models.job_application import JobApplication
-from sqlalchemy import or_
 from app.schemas.enums import JobSource, JobStatus
 
 
@@ -23,10 +23,12 @@ class JobApplicationRepository:
         status: str,
         notes: str | None,
         date_applied,
+        opportunity_id: UUID | None = None,
     ) -> JobApplication:
 
         application = JobApplication(
             user_id=user_id,
+            opportunity_id=opportunity_id,
             company=company,
             role=role,
             location=location,
@@ -43,11 +45,6 @@ class JobApplicationRepository:
         db.refresh(application)
 
         return application
-
-    from math import ceil
-
-    from sqlalchemy import func, or_
-
 
     @staticmethod
     def get_all(
@@ -82,15 +79,20 @@ class JobApplicationRepository:
         total = query.count()
 
         if sort == "asc":
-             query = query.order_by(JobApplication.date_applied.asc())
+            query = query.order_by(
+                JobApplication.date_applied.asc()
+            )
         else:
-            query = query.order_by(JobApplication.date_applied.desc())
+            query = query.order_by(
+                JobApplication.date_applied.desc()
+            )
 
         applications = (
-            query.offset((page - 1) * limit)
+            query
+            .offset((page - 1) * limit)
             .limit(limit)
             .all()
-)
+        )
 
         return {
             "items": applications,
@@ -99,6 +101,7 @@ class JobApplicationRepository:
             "limit": limit,
             "pages": math.ceil(total / limit),
         }
+
     @staticmethod
     def get_by_id(
         db: Session,
@@ -109,6 +112,7 @@ class JobApplicationRepository:
             .filter(JobApplication.id == application_id)
             .first()
         )
+
     @staticmethod
     def update(
         db: Session,
@@ -125,12 +129,16 @@ class JobApplicationRepository:
             return None
 
         update_data = application_data.model_dump(
-    exclude_unset=True
-)
+            exclude_unset=True
+        )
 
-        if "job_url" in update_data and update_data["job_url"] is not None:
-            update_data["job_url"] = str(update_data["job_url"])
-        
+        if (
+            "job_url" in update_data
+            and update_data["job_url"] is not None
+        ):
+            update_data["job_url"] = str(
+                update_data["job_url"]
+            )
 
         for key, value in update_data.items():
             setattr(application, key, value)
@@ -139,12 +147,12 @@ class JobApplicationRepository:
         db.refresh(application)
 
         return application
+
     @staticmethod
     def delete(
         db: Session,
         application_id: UUID,
     ) -> bool:
-
         application = (
             db.query(JobApplication)
             .filter(JobApplication.id == application_id)

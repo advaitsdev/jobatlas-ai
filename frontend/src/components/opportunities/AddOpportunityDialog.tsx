@@ -31,6 +31,7 @@ const initialForm: OpportunityFormData = {
 
   location: "",
   employment_type: "",
+  source: "",
 
   application_url: "",
   salary: "",
@@ -109,6 +110,9 @@ export default function AddOpportunityDialog() {
 
       employment_type:
         form.employment_type || undefined,
+
+      source:
+        form.source || undefined,
 
       application_url:
         form.application_url || undefined,

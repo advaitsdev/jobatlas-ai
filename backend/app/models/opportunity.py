@@ -132,3 +132,9 @@ class Opportunity(
         "User",
         back_populates="opportunities",
     )
+
+    application = relationship(
+        "JobApplication",
+        back_populates="opportunity",
+        uselist=False,
+    )

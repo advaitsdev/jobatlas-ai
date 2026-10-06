@@ -102,6 +102,9 @@ class OpportunityResponse(BaseModel):
 
     notes: str | None
 
+    # Linked application
+    application_id: UUID | None = None
+
     # Job Description
     job_description: str | None
     required_skills: list[str] | None

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -10,30 +10,57 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+
 import { Button } from "@/components/ui/button";
 
 import { createApplication } from "@/services/application";
+
 import type { CreateApplicationRequest } from "@/types/application";
 
 import ApplicationForm from "./ApplicationForm";
 
-const initialForm: CreateApplicationRequest = {
-  company: "",
-  role: "",
-  location: "",
-  source: "LinkedIn",
-  status: "Applied",
-  salary: "",
-  date_applied: new Date().toISOString().split("T")[0],
-  notes: "",
+type Props = {
+  initialValues?: Partial<CreateApplicationRequest>;
+  trigger?: ReactElement;
+  title?: string;
 };
 
-export default function AddApplicationDialog() {
+const getInitialForm = (
+  initialValues?: Partial<CreateApplicationRequest>
+): CreateApplicationRequest => ({
+  company: initialValues?.company ?? "",
+  role: initialValues?.role ?? "",
+  location: initialValues?.location ?? "",
+  source: initialValues?.source ?? "LinkedIn",
+  job_url: initialValues?.job_url ?? null,
+  status: initialValues?.status ?? "Applied",
+  salary: initialValues?.salary ?? "",
+  date_applied:
+    initialValues?.date_applied ??
+    new Date().toISOString().split("T")[0],
+  notes: initialValues?.notes ?? "",
+  opportunity_id: initialValues?.opportunity_id ?? null,
+});
+
+export default function AddApplicationDialog({
+  initialValues,
+  trigger,
+  title = "Add Application",
+}: Props) {
   const [open, setOpen] = useState(false);
+
   const [form, setForm] =
-    useState<CreateApplicationRequest>(initialForm);
+    useState<CreateApplicationRequest>(
+      getInitialForm(initialValues)
+    );
 
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (open) {
+      setForm(getInitialForm(initialValues));
+    }
+  }, [open, initialValues]);
 
   const mutation = useMutation({
     mutationFn: createApplication,
@@ -49,7 +76,7 @@ export default function AddApplicationDialog() {
         queryKey: ["dashboard"],
       });
 
-      setForm(initialForm);
+      setForm(getInitialForm(initialValues));
       setOpen(false);
     },
 
@@ -65,17 +92,17 @@ export default function AddApplicationDialog() {
     >
       <DialogTrigger
         render={
-          <Button>
-            + Add Application
-          </Button>
+          trigger ?? (
+            <Button>
+              + Add Application
+            </Button>
+          )
         }
       />
 
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>
-            Add Application
-          </DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
 
         <ApplicationForm

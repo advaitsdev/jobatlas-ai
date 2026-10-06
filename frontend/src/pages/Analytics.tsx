@@ -1,8 +1,37 @@
+import { useEffect, useState } from "react";
+
 import DashboardAnalytics from "@/components/dashboard/DashboardAnalytics";
-import { useOpportunities } from "@/hooks/useOpportunities";
+import { getApplicationAnalytics } from "@/services/analytics";
+import type { ApplicationAnalytics } from "@/services/analytics";
 
 export default function Analytics() {
-  const { opportunities } = useOpportunities();
+  const [analytics, setAnalytics] =
+    useState<ApplicationAnalytics | null>(null);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadAnalytics() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const data = await getApplicationAnalytics();
+
+        setAnalytics(data);
+      } catch (err) {
+        console.error("Failed to load analytics:", err);
+        setError("Failed to load analytics data.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadAnalytics();
+  }, []);
 
   return (
     <div>
@@ -16,55 +45,97 @@ export default function Analytics() {
         </p>
       </div>
 
-      <DashboardAnalytics opportunities={opportunities} />
-
-      <div className="mt-8 rounded-xl border border-dashed border-slate-700 bg-slate-900 p-8">
-        <h2 className="text-2xl font-semibold text-white">
-          🚀 Coming Soon
-        </h2>
-
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <div className="rounded-lg bg-slate-800 p-4">
-            <h3 className="font-semibold text-white">
-              Interview Funnel
-            </h3>
-
-            <p className="mt-2 text-sm text-slate-400">
-              Track how applications progress from Applied → Interview → Offer.
-            </p>
-          </div>
-
-          <div className="rounded-lg bg-slate-800 p-4">
-            <h3 className="font-semibold text-white">
-              Success Rate
-            </h3>
-
-            <p className="mt-2 text-sm text-slate-400">
-              Measure offer rate and interview conversion over time.
-            </p>
-          </div>
-
-          <div className="rounded-lg bg-slate-800 p-4">
-            <h3 className="font-semibold text-white">
-              Response Rate
-            </h3>
-
-            <p className="mt-2 text-sm text-slate-400">
-              See how many applications receive responses.
-            </p>
-          </div>
-
-          <div className="rounded-lg bg-slate-800 p-4">
-            <h3 className="font-semibold text-white">
-              Monthly Trends
-            </h3>
-
-            <p className="mt-2 text-sm text-slate-400">
-              Compare applications, interviews, and offers month by month.
-            </p>
-          </div>
+      {loading && (
+        <div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-center text-slate-400">
+          Loading analytics...
         </div>
-      </div>
+      )}
+
+      {error && (
+        <div className="rounded-xl border border-red-900/50 bg-red-950/30 p-6 text-center text-red-400">
+          {error}
+        </div>
+      )}
+
+      {analytics && (
+        <>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+              <p className="text-sm text-slate-400">
+                Total Applications
+              </p>
+
+              <p className="mt-2 text-3xl font-bold text-white">
+                {analytics.total_applications}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+              <p className="text-sm text-slate-400">
+                Last 30 Days
+              </p>
+
+              <p className="mt-2 text-3xl font-bold text-white">
+                {analytics.applications_last_30_days}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+              <p className="text-sm text-slate-400">
+                Interview Rate
+              </p>
+
+              <p className="mt-2 text-3xl font-bold text-white">
+                {analytics.application_to_interview_ratio}%
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+              <p className="text-sm text-slate-400">
+                Offer Rate
+              </p>
+
+              <p className="mt-2 text-3xl font-bold text-white">
+                {analytics.application_to_offer_ratio}%
+              </p>
+            </div>
+          </div>
+
+          <DashboardAnalytics
+            analytics={analytics}
+          />
+
+          <div className="mt-8 grid gap-4 md:grid-cols-2">
+            <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+              <h2 className="text-lg font-semibold text-white">
+                Rejection Rate
+              </h2>
+
+              <p className="mt-2 text-3xl font-bold text-white">
+                {analytics.application_to_rejection_ratio}%
+              </p>
+
+              <p className="mt-2 text-sm text-slate-400">
+                Percentage of applications that resulted in a rejection.
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+              <h2 className="text-lg font-semibold text-white">
+                Total Opportunities
+              </h2>
+
+              <p className="mt-2 text-3xl font-bold text-white">
+                {analytics.total_opportunities}
+              </p>
+
+              <p className="mt-2 text-sm text-slate-400">
+                Total opportunities currently tracked in JobAtlasAI.
+              </p>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
-}
+} 

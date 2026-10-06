@@ -225,6 +225,20 @@ export default function OpportunityForm({
       </select>
 
 
+      {/* Source */}
+
+      <Input
+        placeholder="Source (e.g. LinkedIn, Naukri, Indeed)"
+        value={form.source}
+        onChange={(e) =>
+          setForm((prev) => ({
+            ...prev,
+            source: e.target.value,
+          }))
+        }
+      />
+
+
       {/* Salary */}
 
       <Input

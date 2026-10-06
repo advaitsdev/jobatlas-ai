@@ -1,4 +1,5 @@
 import ChartCard from "./ChartCard";
+
 import {
   ResponsiveContainer,
   BarChart,
@@ -8,58 +9,38 @@ import {
   Tooltip,
 } from "recharts";
 
-import type { Opportunity } from "@/types/opportunity";
+import type { CompanyBreakdown } from "@/types/dashboard";
 
 type Props = {
-  opportunities: Opportunity[];
+  data: CompanyBreakdown[];
 };
 
-export default function TopCompaniesChart({
-  opportunities,
-}: Props) {
-  const companyCounts = opportunities.reduce(
-    (acc, opportunity) => {
-      const company = opportunity.company.name;
-
-      acc[company] = (acc[company] ?? 0) + 1;
-
-      return acc;
-    },
-    {} as Record<string, number>
-  );
-
-  const data = Object.entries(companyCounts)
-    .map(([company, count]) => ({
-      company,
-      count,
-    }))
-    .sort((a, b) => b.count - a.count);
-
+export default function TopCompaniesChart({ data }: Props) {
   return (
-  <ChartCard title="Top Companies">
-    <div className="h-80">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          layout="vertical"
-          data={data}
-        >
-          <XAxis type="number" />
-
-          <YAxis
-            type="category"
-            dataKey="company"
-            width={100}
-          />
-
-          <Tooltip />
-
-          <Bar
-            dataKey="count"
-            radius={[0, 8, 8, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  </ChartCard>
-);
+    <ChartCard title="Top Companies">
+      <div className="h-80">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            layout="vertical"
+            data={data}
+            margin={{ top: 10, right: 20, left: 10, bottom: 10 }}
+          >
+            <XAxis type="number" allowDecimals={false} />
+            <YAxis
+              type="category"
+              dataKey="company"
+              width={120}
+              tick={{ fontSize: 12 }}
+            />
+            <Tooltip />
+            <Bar
+              dataKey="count"
+              name="Applications"
+              radius={[0, 8, 8, 0]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </ChartCard>
+  );
 }

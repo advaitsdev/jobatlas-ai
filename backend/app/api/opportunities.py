@@ -39,6 +39,38 @@ router = APIRouter(
 )
 
 
+def build_opportunity_response(
+    opportunity,
+) -> OpportunityResponse:
+    return OpportunityResponse(
+        id=opportunity.id,
+        title=opportunity.title,
+        company=opportunity.company,
+        user_id=opportunity.user_id,
+        location=opportunity.location,
+        employment_type=opportunity.employment_type,
+        source=opportunity.source,
+        status=opportunity.status,
+        application_url=opportunity.application_url,
+        salary=opportunity.salary,
+        applied_date=opportunity.applied_date,
+        deadline=opportunity.deadline,
+        notes=opportunity.notes,
+        application_id=(
+            opportunity.application.id
+            if opportunity.application
+            else None
+        ),
+        job_description=opportunity.job_description,
+        required_skills=opportunity.required_skills,
+        preferred_skills=opportunity.preferred_skills,
+        responsibilities=opportunity.responsibilities,
+        qualifications=opportunity.qualifications,
+        experience_required=opportunity.experience_required,
+        education_required=opportunity.education_required,
+    )
+
+
 @router.post(
     "/parse-jd",
     response_model=JobDescriptionParseResponse,
@@ -62,9 +94,11 @@ def create_opportunity(
 ):
     service = OpportunityService(db)
 
-    return service.create_opportunity(
+    created = service.create_opportunity(
         opportunity
     )
+
+    return build_opportunity_response(created)
 
 
 @router.get(
@@ -80,12 +114,22 @@ def get_opportunities(
 ):
     service = OpportunityService(db)
 
-    return service.get_opportunities(
+    result = service.get_opportunities(
         search=search,
         status=status,
         page=page,
         limit=limit,
     )
+
+    return {
+        **result,
+        "items": [
+            build_opportunity_response(
+                opportunity
+            )
+            for opportunity in result["items"]
+        ],
+    }
 
 
 @router.get(
@@ -205,7 +249,9 @@ def get_opportunity(
             detail="Opportunity not found",
         )
 
-    return opportunity
+    return build_opportunity_response(
+        opportunity
+    )
 
 
 @router.patch(
@@ -230,7 +276,9 @@ def update_opportunity(
             detail="Opportunity not found",
         )
 
-    return updated
+    return build_opportunity_response(
+        updated
+    )
 
 
 @router.delete(

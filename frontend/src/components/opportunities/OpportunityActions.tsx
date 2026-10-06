@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 
 import type { Opportunity } from "@/types/opportunity";
 
@@ -12,6 +13,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 
+import AddApplicationDialog from "@/components/applications/AddApplicationDialog";
+
 import EditOpportunityDialog from "./EditOpportunityDialog";
 import DeleteOpportunityDialog from "./DeleteOpportunityDialog";
 import OpportunitySkillMatch from "./OpportunitySkillMatch";
@@ -23,8 +26,11 @@ type Props = {
 export default function OpportunityActions({
   opportunity,
 }: Props) {
-  const [skillMatchOpen, setSkillMatchOpen] =
-    useState(false);
+  const [skillMatchOpen, setSkillMatchOpen] = useState(false);
+
+  const hasApplication = Boolean(
+    opportunity.application_id
+  );
 
   return (
     <div className="flex justify-center gap-2">
@@ -35,6 +41,43 @@ export default function OpportunityActions({
       <DeleteOpportunityDialog
         opportunity={opportunity}
       />
+
+      {hasApplication ? (
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled
+          title="Application already exists"
+        >
+          <CheckCircle2 className="h-4 w-4" />
+          Applied
+        </Button>
+      ) : (
+        <AddApplicationDialog
+          title="Apply to Opportunity"
+          initialValues={{
+            company: opportunity.company.name,
+            role: opportunity.title,
+            location: opportunity.location ?? "",
+            source: opportunity.source ?? "LinkedIn",
+            job_url: opportunity.application_url,
+            status: "Applied",
+            salary: opportunity.salary ?? "",
+            date_applied:
+              new Date().toISOString().split("T")[0],
+            notes: opportunity.notes ?? "",
+            opportunity_id: opportunity.id,
+          }}
+          trigger={
+            <Button
+              variant="default"
+              size="sm"
+            >
+              Apply
+            </Button>
+          }
+        />
+      )}
 
       <Dialog
         open={skillMatchOpen}

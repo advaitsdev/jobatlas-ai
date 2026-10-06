@@ -16,6 +16,7 @@ class JobApplicationCreate(BaseModel):
     status: JobStatus = JobStatus.APPLIED
     notes: str | None = None
     date_applied: date
+    opportunity_id: UUID | None = None
 
 
 class JobApplicationUpdate(BaseModel):
@@ -28,6 +29,7 @@ class JobApplicationUpdate(BaseModel):
     status: JobStatus
     notes: str | None = None
     date_applied: date
+    opportunity_id: UUID | None = None
 
 
 class JobApplicationResponse(BaseModel):
@@ -41,12 +43,15 @@ class JobApplicationResponse(BaseModel):
     status: JobStatus
     notes: str | None
     date_applied: date
+    opportunity_id: UUID | None
     created_at: datetime
     updated_at: datetime
 
     model_config = {
         "from_attributes": True
     }
+
+
 class PaginatedJobApplicationResponse(BaseModel):
     items: list[JobApplicationResponse]
     total: int
