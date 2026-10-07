@@ -4,7 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.repositories.job_application_repository import JobApplicationRepository
+from app.models.opportunity import Opportunity
+from app.repositories.job_application_repository import (
+    JobApplicationRepository,
+)
 from app.schemas.enums import JobSource, JobStatus
 from app.schemas.job_application import (
     JobApplicationCreate,
@@ -12,6 +15,10 @@ from app.schemas.job_application import (
     JobApplicationUpdate,
     PaginatedJobApplicationResponse,
 )
+from app.services.job_application_service import (
+    get_opportunity_status,
+)
+
 
 router = APIRouter(
     prefix="/applications",
@@ -19,24 +26,34 @@ router = APIRouter(
 )
 
 
-@router.post(
-    "",
-    response_model=JobApplicationResponse,
-)
+@router.post("", response_model=JobApplicationResponse)
 def create_application(
     application: JobApplicationCreate,
     db: Session = Depends(get_db),
 ):
-    return JobApplicationRepository.create(
+    opportunity = None
+
+    if application.opportunity_id:
+        opportunity = (
+            db.query(Opportunity)
+            .filter(Opportunity.id == application.opportunity_id)
+            .first()
+        )
+
+        if opportunity is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Opportunity not found",
+            )
+
+    created = JobApplicationRepository.create(
         db=db,
         user_id=None,
         company=application.company,
         role=application.role,
         location=application.location,
         source=application.source,
-        job_url=str(application.job_url)
-        if application.job_url
-        else None,
+        job_url=str(application.job_url) if application.job_url else None,
         salary=application.salary,
         status=application.status,
         notes=application.notes,
@@ -44,6 +61,19 @@ def create_application(
         opportunity_id=application.opportunity_id,
     )
 
+    if opportunity:
+        opportunity_status = get_opportunity_status(created.status)
+
+        if opportunity_status:
+            opportunity.status = opportunity_status
+
+        if created.status == "Applied":
+            opportunity.applied_date = created.date_applied
+
+        db.commit()
+        db.refresh(created)
+
+    return created
 
 @router.get(
     "",
@@ -111,6 +141,40 @@ def update_application(
     application: JobApplicationUpdate,
     db: Session = Depends(get_db),
 ):
+    existing = JobApplicationRepository.get_by_id(
+        db,
+        application_id,
+    )
+
+    if existing is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Application not found",
+        )
+
+    opportunity_id = (
+        application.opportunity_id
+        if application.opportunity_id
+        else existing.opportunity_id
+    )
+
+    opportunity = None
+
+    if opportunity_id:
+        opportunity = (
+            db.query(Opportunity)
+            .filter(
+                Opportunity.id == opportunity_id
+            )
+            .first()
+        )
+
+        if opportunity is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Opportunity not found",
+            )
+
     updated = JobApplicationRepository.update(
         db,
         application_id,
@@ -122,6 +186,24 @@ def update_application(
             status_code=404,
             detail="Application not found",
         )
+
+    if opportunity:
+        opportunity_status = (
+            get_opportunity_status(
+                updated.status
+            )
+        )
+
+        if opportunity_status:
+            opportunity.status = opportunity_status
+
+        if updated.status == "Applied":
+            opportunity.applied_date = (
+                updated.date_applied
+            )
+
+        db.commit()
+        db.refresh(updated)
 
     return updated
 
