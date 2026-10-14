@@ -1,0 +1,11 @@
+from enum import Enum
+
+
+class OpportunityStatus(str, Enum):
+    WISHLIST = "WISHLIST"
+    APPLIED = "APPLIED"
+    ONLINE_ASSESSMENT = "ONLINE_ASSESSMENT"
+    INTERVIEW = "INTERVIEW"
+    OFFER = "OFFER"
+    REJECTED = "REJECTED"
+    WITHDRAWN = "WITHDRAWN"
