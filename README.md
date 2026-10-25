@@ -1,21 +1,25 @@
 # JobAtlasAI 🚀
-### Your AI-Powered Job Search & Career Intelligence Platform
+### An AI-Powered Job Search & Career Intelligence Platform
 
 <p align="center">
-  <strong>Track applications. Understand job requirements. Identify skill gaps. Make smarter career decisions.</strong>
+  <strong>From resume analysis to job matching, optimized resumes, and application tracking — one connected career intelligence platform.</strong>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/React-2026-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
-  <img src="https://img.shields.io/badge/TypeScript-Frontend-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
+  <a href="https://github.com/advaitsdev/jobatlas-ai">
+    <img src="https://img.shields.io/badge/Project-JobAtlasAI-6C63FF?style=for-the-badge" alt="JobAtlasAI" />
+  </a>
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-6-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/FastAPI-REST%20API-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
   <img src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/Google%20Gemini-Generative%20AI-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white" alt="Google Gemini" />
 </p>
 
 <p align="center">
   <a href="#-overview">Overview</a> •
   <a href="#-features">Features</a> •
+  <a href="#-gemini-ai-integration">Gemini AI</a> •
   <a href="#-architecture">Architecture</a> •
   <a href="#-getting-started">Getting Started</a> •
   <a href="#-roadmap">Roadmap</a>
@@ -25,58 +29,154 @@
 
 ## 🎯 Overview
 
-**JobAtlasAI** is a full-stack job search and career intelligence platform designed to bring the entire job application lifecycle into one place.
+**JobAtlasAI** is a full-stack job search and career intelligence platform that combines generative AI, resume analysis, job-description processing, skill matching, and application tracking.
 
-Traditional job trackers help you remember where you applied. JobAtlasAI goes a step further by connecting job opportunities, job-description analysis, resume skills, skill-gap identification, application progress, and analytics into a unified workflow.
+A conventional job tracker tells you where you applied. JobAtlasAI aims to help answer the more important questions:
 
-Instead of treating every application as an isolated entry, the platform connects the dots between **what a job requires, what your resume demonstrates, and how your application progresses**.
+- How well does my resume align with a target role?
+- Which skills, keywords, and qualifications are relevant to a job?
+- How can I improve my resume without misrepresenting my experience?
+- What should I focus on before applying?
+- How do I keep my applications organized and measure my job-search activity?
 
-### The problem
+The platform combines **Google Gemini-powered AI workflows** with deterministic skill analysis, structured PostgreSQL data, and a React-based interface.
 
-Job seekers often manage applications across spreadsheets, job boards, bookmarks, and scattered notes. This makes it difficult to:
+### The core idea
 
-- Keep track of applications and their changing statuses.
-- Understand the skills employers repeatedly request.
-- Identify gaps between a resume and a target role.
-- Compare opportunities before investing time in an application.
-- Measure application activity and understand job-search patterns.
+Connect the entire job-search lifecycle:
 
-### The solution
+**Analyze → Match → Improve → Apply → Track → Learn**
 
-JobAtlasAI combines application management with resume and job-description intelligence, creating a foundation for a more structured, measurable, and data-driven job search.
+Rather than building disconnected tools for resumes, job descriptions, and application management, JobAtlasAI brings these capabilities into a shared workflow.
 
 ## ✨ Features
 
-### 📊 1. Application Dashboard & Analytics
+### 🤖 1. Gemini-Powered Resume Analysis
 
-Get a consolidated view of your job search.
+JobAtlasAI integrates Google's Gemini API through the `google-genai` Python SDK to analyze extracted resume content and return structured results.
 
-- Application statistics and summary metrics.
-- Application status breakdowns.
-- Application sources and activity trends.
-- Company-level and monthly breakdowns.
+The resume analysis service evaluates a resume across several dimensions:
+
+- **Candidate information:** Name, email, and phone number.
+- **Education:** Institutions, degrees, duration, and location.
+- **Experience:** Roles, organizations, dates, and achievement highlights.
+- **Projects:** Project names, technology stacks, and highlights.
+- **Technical skills:** Skills extracted from the resume.
+- **ATS-oriented evaluation:** An AI-generated score from 0–100.
+- **Career direction:** A suggested role based on the resume.
+- **Strengths and missing skills:** Areas of demonstrated capability and potential gaps.
+- **Improvement recommendations:** Actionable suggestions for strengthening the resume.
+
+The generated response is validated against a Pydantic schema before being used by the application.
+
+Resume analyses are stored in the database and can be retrieved for later use by the skills profile and other resume intelligence features.
+
+> AI-generated scores are estimates for decision support. They are not official scores from commercial applicant tracking systems.
+
+### 🎯 2. AI-Powered Resume-to-Job Matching
+
+The AI matching service compares a resume against a specific job description using Gemini.
+
+The analysis returns structured information covering:
+
+- Overall resume-to-job match score.
+- ATS-oriented match score.
+- Recommended role.
+- Matching and missing skills.
+- Keyword matches.
+- Candidate strengths and weaknesses.
+- Resume improvement recommendations.
+- Five interview questions based on the resume and target job.
+
+This workflow is designed to help candidates understand not only whether their resume appears relevant, but also **why it matches, what is missing, and how to prepare**.
+
+The backend exposes the matching workflow through the `/ai-matching/match` endpoint.
+
+### ✍️ 3. AI Resume Optimization
+
+The resume optimization service uses Gemini to produce targeted, actionable recommendations for improving an existing resume.
+
+Its structured analysis includes:
+
+- An overall resume quality score.
+- A summary of the resume's strengths and weaknesses.
+- Weak or vague bullet points.
+- Improved bullet-point suggestions.
+- Missing keywords.
+- ATS-oriented improvements.
+- Section-specific recommendations.
+
+When a target job description is supplied, the analysis can focus on relevant requirements and keywords. Without one, it can provide more general improvements aligned with the candidate's demonstrated career direction.
+
+The optimizer is explicitly instructed to avoid inventing experience, projects, technologies, accomplishments, or metrics.
+
+This separates **identifying improvements** from rewriting the complete resume.
+
+### 📄 4. Generate an Optimized Resume
+
+Beyond recommendations, JobAtlasAI includes a separate workflow for generating an improved resume with Gemini.
+
+The optimized resume generation service can produce a structured resume containing:
+
+- Contact information.
+- A professional summary.
+- Education.
+- Experience.
+- Projects and technology stacks.
+- Technical skills.
+
+The generation prompt emphasizes factual preservation, clear writing, stronger accomplishment statements, and ATS readability.
+
+A target job description can be provided to guide the optimization toward relevant requirements without adding unsupported claims.
+
+The resulting structured resume can then be rendered as a downloadable PDF through the resume PDF generation service.
+
+**The distinction matters:** the optimization workflow provides feedback on the existing resume, while the optimized-resume workflow generates a revised resume artifact.
+
+### 📊 5. Job Application Dashboard & Analytics
+
+The dashboard brings job-search activity into a consolidated view.
+
+It includes application-oriented metrics and breakdowns such as:
+
+- Application totals and summary statistics.
+- Application status distributions.
+- Application sources.
+- Monthly application trends.
+- Company-level breakdowns.
 - Recent application activity.
-- Search, filtering, sorting, and pagination for application records.
+- Application-to-outcome metrics exposed by the analytics backend.
 
-The goal is to turn application history into useful information rather than leaving it as a list of entries.
+The application tracker also supports searching, filtering, sorting, and paginating records.
 
-### 🎯 2. Job Opportunity Management
+The dashboard is backed by API and database queries rather than relying solely on hardcoded frontend statistics.
 
-Maintain a dedicated collection of opportunities you're considering or pursuing.
+### 🎯 6. Job Opportunity Management
 
-- Create, view, edit, and delete opportunities.
-- Store company, role, location, source, salary, application URL, and notes.
-- Track opportunity status, deadlines, and application dates.
-- Associate opportunities with company records.
-- Link opportunities to their corresponding job applications.
+Manage job opportunities independently from submitted applications.
 
-The opportunity and application records are connected, allowing the system to represent the difference between a job you're considering and one you've actually applied for.
+Each opportunity can retain information such as:
 
-### 📝 3. Job Description Parsing
+- Job title and company.
+- Location and employment type.
+- Source and application URL.
+- Salary information.
+- Opportunity status.
+- Application date and deadline.
+- Notes.
+- Job description and structured requirements.
 
-Turn a job description into structured information.
+The opportunity management interface supports creating, viewing, editing, and deleting records.
 
-The JD parser extracts information such as:
+Opportunities can move through statuses such as `WISHLIST`, `APPLIED`, `ONLINE_ASSESSMENT`, `INTERVIEW`, `OFFER`, `REJECTED`, and `WITHDRAWN`.
+
+This separates jobs worth pursuing from applications already in progress.
+
+### 📝 7. Job Description Parsing
+
+JobAtlasAI includes a local, rule-based job-description parser.
+
+Rather than using Gemini for every parsing request, this service extracts structured fields from the supplied description, including:
 
 - Required skills.
 - Preferred skills.
@@ -85,161 +185,289 @@ The JD parser extracts information such as:
 - Experience requirements.
 - Education requirements.
 
-The current parser uses local, rule-based extraction rather than depending on a paid external LLM API.
+Parsed information can be saved to an opportunity and used by the matching and skill-gap workflows.
 
-Structured job requirements also provide the input needed for resume-to-opportunity matching and skill-gap analysis.
+The local parser and Gemini services serve different purposes: the parser extracts structured job information, while the generative AI workflows reason over resume and job-description content.
 
-### 🧠 4. Resume Skills Intelligence
+### 🧠 8. Resume Skills Profile
 
-Extract skills from analyzed resumes and make them available for downstream analysis.
+Skills extracted during resume analysis are persisted and exposed through the resume API.
 
-The skills profile supports:
+The skills profile uses this information to help users understand their existing capabilities and compare them against the skills requested by job opportunities.
 
-- Viewing extracted resume skills.
-- Understanding which skills appear in analyzed job descriptions.
-- Identifying missing or underrepresented skills.
-- Examining skill gaps across opportunities.
-- Comparing resume skills against job requirements.
+It supports the broader skill-intelligence workflow, including viewing extracted skills and identifying missing or underrepresented requirements.
 
-This creates a foundation for understanding the relationship between a candidate's existing skill set and their target roles.
+### 🔍 9. Deterministic Skill Matching & Skill-Gap Analysis
 
-### 🔍 5. Resume-to-Job Skill Matching
+Alongside Gemini-based analysis, JobAtlasAI implements a separate local skill-matching engine.
 
-Compare a resume's extracted skills against the requirements of an individual opportunity.
+The opportunity skill-matching service compares:
 
-- Identify matching skills.
-- Highlight missing required skills.
-- Examine the relationship between resume skills and job requirements.
-- Use skill-gap results to inform preparation and resume improvement.
+- Skills extracted from a resume.
+- Required skills associated with an opportunity.
+- Preferred skills associated with an opportunity.
 
-The matching workflow is designed to make job requirements more actionable than a simple keyword list.
+It returns matching and missing-skill information and supports opportunity-specific skill-gap analysis.
 
-> **Note:** Skill overlap is a useful signal, not a guarantee of ATS performance, recruiter interest, or interview selection.
+The skill-gap service also provides a broader view of the skills that may need attention across opportunities.
 
-### 🔄 6. Application & Opportunity Synchronization
+This hybrid approach combines generative AI for contextual analysis with structured, deterministic logic for explicit skill comparisons.
 
-JobAtlasAI connects application progress with the corresponding opportunity.
+**Gemini analysis and local skill matching are complementary features, not the same engine.**
 
-The backend synchronizes application statuses with the linked opportunity:
+### 🔄 10. Application & Opportunity Synchronization
+
+JobAtlasAI links an application to the opportunity it represents.
+
+When a linked application is created or updated, the backend can synchronize the opportunity's status automatically.
 
 | Application status | Opportunity status |
 |---|---|
-| Applied | `APPLIED` |
-| Interview | `INTERVIEW` |
-| HR | `INTERVIEW` |
-| Offer | `OFFER` |
-| Rejected | `REJECTED` |
-| Ghosted | `REJECTED` |
-| Withdrawn | `WITHDRAWN` |
+| `Applied` | `APPLIED` |
+| `Interview` | `INTERVIEW` |
+| `HR` | `INTERVIEW` |
+| `Offer` | `OFFER` |
+| `Rejected` | `REJECTED` |
+| `Ghosted` | `REJECTED` |
+| `Withdrawn` | `WITHDRAWN` |
 
-When a linked application is created with the status `Applied`, the opportunity is updated to `APPLIED` and its application date is synchronized.
+When an application is created with the status `Applied`, the opportunity is updated to `APPLIED`, its applied date is synchronized, and the linked application ID becomes available in the opportunity response.
 
-The relationship also allows the opportunity interface to identify an existing application and open it for editing instead of creating a duplicate.
+The interface also recognizes existing applications and allows users to open and edit them instead of creating another application for the same opportunity.
 
-**Verified workflow:** Application creation, opportunity linking, `Applied` synchronization, `Interview` synchronization, and the linked application ID were tested against the local PostgreSQL-backed API.
+**Verified:** Application creation, linking, `Applied` synchronization, `Interview` synchronization, and the linked application ID were tested against the local PostgreSQL-backed API. Temporary test records were removed after validation.
 
-### 🏢 7. Company & Application Organization
+### 🏢 11. Company & Application Organization
 
-Applications and opportunities retain company and role information, providing the data foundation for future company-level intelligence.
+Company records are associated with opportunities, while applications retain company and role details.
 
-Planned extensions include company-level application conversion metrics, recurring skill requirements, and hiring activity insights.
+This provides a foundation for richer company-level intelligence, including application history, recurring skill requirements, and future hiring insights.
+
+---
+
+## 🧠 Gemini AI Integration
+
+Google Gemini is a central part of JobAtlasAI's resume intelligence layer.
+
+### How it works
+
+The backend uses Google's `google-genai` SDK and reads the API key from application configuration.
+
+The AI services build prompts from extracted resume text and, when relevant, a target job description. Gemini generates a structured response, which the service parses and validates against the corresponding Pydantic schema.
+
+```mermaid
+flowchart TD
+    A[Resume PDF] --> B[PDF Text Extraction]
+    B --> C[Resume Text]
+    C --> D[Gemini AI Service]
+    J[Optional Job Description] --> D
+    D --> E[Structured AI Response]
+    E --> F[Pydantic Validation]
+    F --> G[Resume Analysis or Match]
+    F --> H[Resume Optimization]
+    F --> I[Optimized Resume Generation]
+    I --> K[PDF Export]
+```
+
+### AI services
+
+| Service | Purpose |
+|---|---|
+| `AIResumeService` | Extract structured resume information and generate an AI-based resume assessment |
+| `JobMatchService` | Compare a resume against a job description and generate match insights and interview questions |
+| `AIResumeOptimizerService` | Identify resume weaknesses and return targeted improvement recommendations |
+| `AIOptimizedResumeService` | Generate a structured, optimized version of the resume |
+
+The repository's current AI services specify the model identifier `gemini-3.6-flash`. Model availability and API access depend on the Google AI account and its current supported models.
+
+### Configuration
+
+Set `GEMINI_API_KEY` in the backend environment configuration. Never expose the key in frontend code or commit it to version control.
+
+AI requests may fail because of quota limits, rate limits, unavailable models, malformed responses, or temporary service errors. Some services explicitly translate these failures into API error responses; error handling is not yet fully unified across every AI workflow.
 
 ---
 
 ## 🏗️ Architecture
 
-JobAtlasAI follows a frontend/backend architecture with a relational database.
+JobAtlasAI uses a React frontend, a FastAPI backend, and PostgreSQL for persistent application data.
 
 ```mermaid
 flowchart TD
     U[User] --> FE[React + TypeScript Frontend]
     FE --> API[FastAPI REST API]
-    API --> S[Service Layer]
-    S --> R[Repository Layer]
-    R --> DB[(PostgreSQL)]
-    S --> JD[JD Parsing]
-    S --> SM[Resume Skill Matching]
-    S --> GAP[Skill Gap Analysis]
-    S --> AN[Dashboard Analytics]
-    JD --> DB
-    SM --> DB
-    GAP --> DB
-    AN --> DB
+
+    API --> RES[Resume Services]
+    API --> OPP[Opportunity Services]
+    API --> APP[Application Services]
+    API --> DASH[Dashboard & Analytics]
+
+    RES --> PDF[PDF Text Extraction]
+    RES --> GEM[Google Gemini API]
+    RES --> SKILLS[Resume Skills]
+
+    OPP --> PARSER[Local JD Parser]
+    OPP --> MATCH[Local Skill Matching]
+    OPP --> GAP[Skill-Gap Analysis]
+
+    RES --> DB[(PostgreSQL)]
+    OPP --> DB
+    APP --> DB
+    DASH --> DB
 ```
 
 ### Technology stack
 
 | Layer | Technologies |
 |---|---|
-| Frontend | React, TypeScript, Vite |
-| Styling & UI | Tailwind CSS, shadcn/ui |
-| Data fetching | TanStack Query |
-| API communication | Axios |
+| Frontend framework | React 19, TypeScript |
+| Build tooling | Vite |
+| Styling | Tailwind CSS 4, shadcn/ui |
+| Routing | React Router |
+| Data fetching and caching | TanStack Query |
+| HTTP client | Axios |
 | Charts | Recharts |
-| Backend | Python, FastAPI |
-| Data validation | Pydantic |
-| ORM | SQLAlchemy |
+| UI notifications | Sonner |
+| Backend framework | Python, FastAPI |
+| AI integration | Google Gemini API, `google-genai` |
+| Request and response validation | Pydantic |
+| ORM | SQLAlchemy 2 |
 | Database | PostgreSQL |
-| Database migrations | Alembic |
+| Migrations | Alembic |
+| PDF text extraction | PyMuPDF |
+| PDF generation | Custom resume PDF service |
 | API documentation | FastAPI / Swagger UI |
 | Version control | Git, GitHub |
 
-### Backend structure
+### Backend architecture
+
+The backend separates API routing, schemas, database models, repositories, and business services.
 
 ```text
 backend/
 ├── alembic/
-│   └── versions/          # Database migrations
+│   └── versions/
 ├── app/
-│   ├── api/               # REST API routes
-│   ├── core/              # Application configuration
-│   ├── db/                # Database session and connection setup
-│   ├── models/             # SQLAlchemy models
-│   ├── repositories/       # Database access operations
-│   ├── schemas/            # Pydantic request/response schemas
-│   ├── services/           # Business logic and analysis
-│   └── main.py             # FastAPI application entry point
+│   ├── api/
+│   │   ├── ai_matching.py
+│   │   ├── companies.py
+│   │   ├── dashboard.py
+│   │   ├── job_application.py
+│   │   ├── opportunities.py
+│   │   ├── optimized_resume.py
+│   │   ├── resume.py
+│   │   ├── resume_optimizer.py
+│   │   └── ...
+│   ├── core/
+│   │   └── config.py
+│   ├── db/
+│   ├── models/
+│   ├── repositories/
+│   ├── schemas/
+│   ├── services/
+│   │   ├── ai_resume_service.py
+│   │   ├── ai_resume_optimizer_service.py
+│   │   ├── ai_optimized_resume_service.py
+│   │   ├── job_match_service.py
+│   │   ├── job_description_parser.py
+│   │   ├── skill_match_service.py
+│   │   ├── skill_gap_service.py
+│   │   └── ...
+│   ├── main.py
+│   └── ...
 ├── requirements.txt
-└── .env                    # Local environment configuration
+└── .env
 ```
 
-### Frontend structure
+### Frontend architecture
 
 ```text
 frontend/
 ├── src/
 │   ├── components/
-│   │   ├── applications/  # Application management UI
-│   │   └── opportunities/ # Opportunity and matching UI
-│   ├── pages/             # Dashboard and application pages
-│   ├── services/          # API service functions
-│   ├── types/             # TypeScript interfaces
+│   │   ├── applications/
+│   │   ├── opportunities/
+│   │   └── ...
+│   ├── pages/
+│   ├── services/
+│   ├── types/
 │   └── ...
 ├── package.json
-└── vite.config.ts
+├── vite.config.ts
+└── ...
 ```
 
-The directory trees above show the main architectural areas, not every file in the repository.
+These trees highlight important files and architectural areas rather than listing every file.
 
 ---
 
-## 🔁 Core Workflow
+## 🔁 End-to-End Workflows
 
-The central workflow connects job discovery to application tracking and career analysis.
+### Workflow A — Resume intelligence
 
-```mermaid
-flowchart TD
-    A[Create Job Opportunity] --> B[Parse Job Description]
-    B --> C[Extract Job Requirements]
-    C --> D[Compare Against Resume Skills]
-    D --> E[Identify Skill Gaps]
-    E --> F[Create Linked Application]
-    F --> G[Track Application Status]
-    G --> H[Synchronize Opportunity Status]
-    H --> I[Review Dashboard Analytics]
-```
+1. Upload a resume PDF.
+2. Extract its text using PyMuPDF.
+3. Send the extracted text to the Gemini resume-analysis service.
+4. Validate the structured response.
+5. Persist the analysis and extracted skills.
+6. Reuse the saved data in the skills profile and other analysis workflows.
 
-This architecture separates opportunity management, application tracking, and skill intelligence while allowing them to work together.
+### Workflow B — Job-specific matching
+
+1. Upload a resume and provide a target job description.
+2. Extract the resume text.
+3. Send both inputs to Gemini through the AI matching endpoint.
+4. Review match scores, missing skills, keyword matches, recommendations, and interview questions.
+
+### Workflow C — Resume optimization
+
+1. Select an analyzed resume.
+2. Optionally provide a target job description.
+3. Generate improvement recommendations or a complete optimized resume.
+4. Review the structured output.
+5. Generate a PDF from the optimized resume.
+
+### Workflow D — Opportunity to application
+
+1. Create an opportunity.
+2. Parse its job description and inspect its skill requirements.
+3. Compare the opportunity against a saved resume's extracted skills.
+4. Create an application linked to the opportunity.
+5. Track application status.
+6. Synchronize application progress with the opportunity.
+7. Review the resulting activity through the dashboard and analytics.
+
+---
+
+## 🔌 API Overview
+
+The following routes are defined by the current backend. Request schemas and response formats are available through Swagger UI.
+
+| Area | Endpoint | Purpose |
+|---|---|---|
+| Resume | `POST /resume/upload` | Upload and analyze a resume |
+| Resume | `GET /resume/history` | Retrieve resume history |
+| Resume | `GET /resume/{resume_id}` | Retrieve resume and analysis data |
+| Resume | `GET /resume/{resume_id}/skills` | Retrieve extracted skills |
+| Resume | `DELETE /resume/{resume_id}` | Delete a resume and its associated analysis |
+| AI matching | `POST /ai-matching/match` | Match resume content against a job description using Gemini |
+| Resume optimization | `POST /resume/{resume_id}/optimize` | Generate AI-driven resume improvement recommendations |
+| Optimized resume | `POST /resume/{resume_id}/generate` | Generate an optimized resume |
+| Optimized resume | `POST /resume/generate-pdf` | Generate a PDF from structured optimized-resume data |
+| Opportunities | `POST /opportunities/parse-jd` | Parse a job description |
+| Opportunities | `POST /opportunities` | Create an opportunity |
+| Opportunities | `GET /opportunities` | List opportunities |
+| Opportunities | `GET /opportunities/{opportunity_id}` | Retrieve an opportunity |
+| Opportunities | `PATCH /opportunities/{opportunity_id}` | Update an opportunity |
+| Opportunities | `GET /opportunities/{opportunity_id}/skill-match` | Compare opportunity requirements with resume skills |
+| Opportunities | `GET /opportunities/skill-gaps` | Retrieve skill-gap information |
+| Applications | `POST /applications` | Create an application |
+| Applications | `GET /applications` | List applications |
+| Applications | `GET /applications/{application_id}` | Retrieve an application |
+| Applications | `PUT /applications/{application_id}` | Update an application |
+| Applications | `DELETE /applications/{application_id}` | Delete an application |
+
+The application also exposes company, dashboard, and analytics routes. The root API endpoint is `/`, and interactive API documentation is available at `/docs`.
 
 ---
 
@@ -247,13 +475,11 @@ This architecture separates opportunity management, application tracking, and sk
 
 ### Prerequisites
 
-Install the following before running the project:
-
 - Git
-- Python 3.10 or a compatible supported version
+- Python 3.10 or a compatible supported Python version
 - Node.js and npm
 - PostgreSQL
-- A terminal such as PowerShell, Bash, or your preferred shell
+- A Google AI API key with access to the configured Gemini model
 
 ### 1. Clone the repository
 
@@ -262,11 +488,13 @@ git clone https://github.com/advaitsdev/jobatlas-ai.git
 cd jobatlas-ai
 ```
 
-### 2. Set up the backend
+### 2. Configure PostgreSQL
 
-Create and activate a virtual environment.
+Create a PostgreSQL database for JobAtlasAI and note your local database credentials.
 
-**Windows PowerShell**
+### 3. Set up the backend
+
+From the repository root:
 
 ```powershell
 cd backend
@@ -278,30 +506,29 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-On macOS or Linux, activate the environment with:
+For macOS or Linux, activate the environment using:
 
 ```bash
 source .venv/bin/activate
 ```
 
-### 3. Configure environment variables
+### 4. Configure environment variables
 
-Create or update `backend/.env` using the variables expected by the project's current configuration.
-
-For example, a typical local configuration may contain:
+Create `backend/.env` with values appropriate for your local environment.
 
 ```dotenv
 DATABASE_URL=postgresql+psycopg://USERNAME:PASSWORD@localhost:5432/jobatlasai
 SECRET_KEY=replace_with_a_long_random_secret
+GEMINI_API_KEY=your_google_gemini_api_key
+DEBUG=True
+ENVIRONMENT=development
 ```
 
-Replace the placeholders with your local PostgreSQL credentials and a securely generated secret.
+Replace every placeholder with your own configuration. Confirm the database URL format against the current SQLAlchemy setup.
 
-**Important:** Check the database URL format expected by the current SQLAlchemy configuration before using this example. Never commit real credentials, secret keys, or production environment files.
+**Never commit `.env`, real API keys, or production secrets.**
 
-Create the PostgreSQL database if it does not already exist.
-
-### 4. Apply database migrations
+### 5. Apply migrations
 
 From the `backend` directory, with the virtual environment activated:
 
@@ -309,31 +536,20 @@ From the `backend` directory, with the virtual environment activated:
 alembic upgrade head
 ```
 
-Ensure your database connection is configured correctly before applying migrations.
+Make sure the configured database is correct before applying migrations.
 
-### 5. Start the backend
-
-From `backend/`:
+### 6. Start the backend
 
 ```powershell
 uvicorn app.main:app --reload
 ```
 
-The local API should be available at:
+The backend should start at:
 
-```text
-http://127.0.0.1:8000
-```
+- API: `http://127.0.0.1:8000`
+- Swagger documentation: `http://127.0.0.1:8000/docs`
 
-Interactive API documentation:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-Use Swagger UI to inspect endpoints and exercise supported API workflows.
-
-### 6. Start the frontend
+### 7. Start the frontend
 
 Open a second terminal:
 
@@ -343,166 +559,170 @@ npm install
 npm run dev
 ```
 
-Vite will display the local frontend URL, typically:
+Vite typically serves the frontend at:
 
-```text
-http://localhost:5173
+`http://localhost:5173`
+
+Ensure the frontend API client points to the correct backend URL.
+
+### 8. Available frontend checks
+
+From `frontend/`:
+
+```bash
+npm run build
+npm run lint
 ```
 
-Ensure the frontend API configuration points to the running backend.
+These scripts are defined in the current frontend `package.json`.
 
-### 7. Verify the application
+### First-run checklist
 
-After starting both services:
+- [ ] PostgreSQL is running and the database exists.
+- [ ] Backend dependencies are installed.
+- [ ] `backend/.env` contains valid local settings.
+- [ ] Database migrations have completed successfully.
+- [ ] The Gemini API key is configured.
+- [ ] The FastAPI server starts successfully.
+- [ ] The frontend starts successfully.
+- [ ] The dashboard and API endpoints can be accessed.
 
-1. Open the frontend in your browser.
-2. Verify the dashboard loads.
-3. Create or inspect a job application.
-4. Create an opportunity and parse a job description.
-5. Run skill matching where resume data is available.
-6. Link an application to an opportunity.
-7. Change the application status and verify synchronization through the API.
-
-These are manual smoke-test steps; a complete automated test suite remains part of the hardening roadmap.
+Some workflows require an existing uploaded resume, a completed resume analysis, or a job description.
 
 ---
 
 ## 🧪 Testing & Validation
 
-The application has undergone manual API validation through Swagger UI.
+Critical application/opportunity synchronization workflows have been manually tested through Swagger UI against the local PostgreSQL-backed API.
 
 Verified scenarios include:
 
-- Creating and retrieving applications.
-- Linking an application to an opportunity.
-- Updating application status.
+- Creating an application linked to an opportunity.
 - Synchronizing `Applied` to `APPLIED`.
 - Synchronizing `Interview` to `INTERVIEW`.
-- Synchronizing the application date when creating an `Applied` application.
-- Returning the linked application's ID in the opportunity response.
-- Removing temporary test records after validation.
+- Synchronizing the applied date during linked application creation.
+- Returning the associated `application_id` in the opportunity response.
+- Removing temporary records created for testing.
 
-### Planned automated coverage
+The AI workflows are implemented as separate services with structured Pydantic response schemas. The full backend still needs comprehensive automated test coverage for CRUD, upload validation, AI error handling, parsing, matching, analytics, and database integrity.
 
-The next testing phase will introduce repeatable automated coverage for:
-
-- Application and opportunity CRUD operations.
-- Application/opportunity relationship integrity.
-- Status synchronization and date updates.
-- Job-description parsing.
-- Resume skill extraction and matching.
-- Skill-gap calculations.
-- Dashboard analytics.
-- Invalid, oversized, and unsafe resume uploads.
-
-Until that suite is implemented, manual verification should not be mistaken for automated test coverage.
+**Manual validation is not a substitute for a complete automated test suite.**
 
 ---
 
-## 🔐 Security & Engineering Considerations
+## 🔐 Security & Limitations
 
-Security and reliability are active areas of improvement.
+JobAtlasAI is an actively developed project, and several production-readiness improvements remain in progress.
 
-Planned hardening includes:
+Current hardening priorities include:
 
-- Reconciling database constraints with ORM models, migrations, and request schemas.
-- Validating resume uploads by file content, not just filename or MIME type.
-- Generating safe server-side filenames and enforcing upload-size limits.
-- Preventing path traversal and unsafe file access.
-- Defining and enforcing a deliberate data ownership model.
-- Consolidating database engine and session configuration.
+- Reconciling PostgreSQL constraints with SQLAlchemy models and migrations.
+- Securing both resume upload paths with safe filenames, content validation, size limits, and path-traversal protection.
+- Defining and consistently enforcing user ownership and access control.
+- Consolidating database session and engine configuration.
 - Adding automated backend tests and CI checks.
-- Improving deployment configuration and secret management.
+- Improving error handling across AI services.
+- Strengthening deployment configuration and secret management.
 
-**Current scope:** JobAtlasAI is a development-stage project. Do not assume production-grade authentication, multi-user isolation, deployment automation, or complete security hardening unless those capabilities are verified in the current codebase.
+Resume uploads and AI requests may involve sensitive personal information. Use only files and API credentials you are authorized to process, and avoid exposing personal data in logs or public test fixtures.
+
+AI-generated scores and recommendations are estimates. They do not guarantee ATS compatibility, interviews, or job offers.
 
 ---
 
 ## 🗺️ Roadmap
 
-### Current foundation
+### Implemented foundation
 
-- [x] Full-stack frontend and backend foundation.
-- [x] Job application CRUD and tracking.
+- [x] React and TypeScript frontend.
+- [x] FastAPI REST backend.
+- [x] PostgreSQL persistence and Alembic migrations.
+- [x] Resume upload and PDF text extraction.
+- [x] Gemini-powered structured resume analysis.
+- [x] Gemini-powered resume-to-job matching.
+- [x] Gemini-powered resume improvement recommendations.
+- [x] Gemini-powered optimized resume generation.
+- [x] Optimized resume PDF generation.
+- [x] Local job-description parsing.
+- [x] Resume skill extraction and skills profile.
+- [x] Deterministic skill matching and skill-gap analysis.
+- [x] Job application tracking and dashboard analytics.
 - [x] Opportunity management.
-- [x] Structured job-description parsing.
-- [x] Resume skills profile.
-- [x] Resume-to-opportunity skill matching.
-- [x] Skill-gap analysis.
-- [x] Dashboard analytics.
 - [x] Opportunity-to-application linking.
 - [x] Application status synchronization.
-- [x] Manual API validation of critical workflows.
+- [x] Manual verification of critical synchronization workflows.
 
-### Next priorities
+### Engineering hardening
 
-- [ ] Reconcile `user_id` database constraints, ORM models, and migrations.
+- [ ] Reconcile `user_id` constraints, models, migrations, and request schemas.
 - [ ] Secure both resume upload paths.
-- [ ] Define and enforce user ownership and access control.
+- [ ] Define the user ownership and access-control model.
 - [ ] Consolidate database setup.
 - [ ] Build an automated backend test suite.
-- [ ] Write comprehensive setup and architecture documentation.
-- [ ] Clean up frontend routing and API configuration.
+- [ ] Standardize AI-service error handling.
+- [ ] Improve frontend API configuration and error handling.
 - [ ] Add CI checks for backend tests and frontend build/lint.
-- [ ] Develop richer company intelligence.
-- [ ] Improve opportunity ranking and personalized recommendations.
-- [ ] Expand resume tailoring and job-specific preparation.
-- [ ] Explore browser-based job ingestion.
-- [ ] Prepare for deployment and production operations.
+- [ ] Document architecture, configuration, and test procedures comprehensively.
+
+### Future product direction
+
+- [ ] Company intelligence and hiring insights.
+- [ ] Personalized opportunity ranking and recommendations.
+- [ ] Deeper job-specific resume tailoring.
+- [ ] Broader career analytics.
+- [ ] Browser-based job ingestion.
+- [ ] Deployment and production operations.
 
 ---
 
-## 💡 Design Principles
+## 💡 Engineering Principles
 
-JobAtlasAI is being developed around a few core principles:
+**Connected data, not disconnected tools.**  
+Applications, opportunities, resumes, and job requirements share context across workflows.
 
-**1. Connected workflows**
+**Hybrid intelligence.**  
+Generative AI handles contextual analysis and writing, while deterministic services handle explicit skill comparisons and structured business logic.
 
-Applications, opportunities, resumes, and skill requirements should share relevant context instead of operating as isolated modules.
+**Structured AI outputs.**  
+AI responses are parsed and validated against schemas before being consumed by downstream services.
 
-**2. Actionable information**
+**Truthful resume optimization.**  
+The optimization prompts instruct the model not to invent achievements, skills, credentials, or metrics.
 
-Extracted skills and analytics should help users decide what to improve and where to focus.
+**Incremental development.**  
+Features are built, tested, checkpointed in Git, and progressively hardened.
 
-**3. Modular architecture**
-
-API routes, business logic, database access, and frontend services should have clear responsibilities.
-
-**4. Incremental engineering**
-
-Build features, verify critical workflows, checkpoint changes in Git, and harden the system progressively.
-
-**5. Transparent limitations**
-
-A match score or extracted skill is a decision-support signal, not a promise of hiring success.
+**Transparent limitations.**  
+AI-generated scores and recommendations support decision-making; they are not guarantees of employment outcomes.
 
 ---
 
-## 👨‍💻 About the Project
+## 👨‍💻 About JobAtlasAI
 
-JobAtlasAI is an independent full-stack engineering project focused on combining job application management with practical career intelligence.
+JobAtlasAI is an independent full-stack engineering project exploring the intersection of generative AI, career intelligence, data modelling, and application lifecycle management.
 
-It explores:
+It brings together:
 
-- REST API design with FastAPI.
-- Relational data modelling and database migrations.
-- Frontend/backend integration with React and TypeScript.
-- Resume and job-description processing.
-- Skill matching and gap analysis.
-- Application lifecycle modelling and synchronization.
+- Full-stack application development.
+- REST API design and service-layer architecture.
+- Relational database design and migrations.
+- Gemini API integration and structured generative AI.
+- PDF processing and resume data extraction.
+- Prompt design and Pydantic response validation.
+- Resume-to-job matching and skill-gap analysis.
 - Analytics-driven product design.
-- Incremental development and engineering validation.
+- Application/opportunity relationships and status synchronization.
 
-The long-term vision is to evolve JobAtlasAI from a job application tracker into a unified platform for **understanding opportunities, improving candidate-role alignment, and making the job search more measurable**.
+The long-term vision is to build a unified platform that helps candidates **understand their fit for a role, improve how they present their experience, and manage the job search with greater clarity**.
 
 ---
 
 ## 📄 License
 
-A license has not yet been specified. Check the repository's licensing requirements before publishing or reusing this project.
+No license is documented here. Review the repository's licensing requirements before distributing or reusing the project.
 
 ---
 
 <p align="center">
-  <strong>Built to make job searching more structured, measurable, and intelligent. 🚀</strong>
+  <strong>Understand your fit. Improve your resume. Navigate your career with intelligence. 🚀</strong>
 </p>
